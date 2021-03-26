@@ -54,7 +54,8 @@ namespace Maverick.XTB.DependencyIdentifier.UserControls
             // 
             // lvData
             // 
-            this.lvData.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.lvData.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lvData.CheckBoxes = true;
             this.lvData.FullRowSelect = true;
@@ -118,12 +119,12 @@ namespace Maverick.XTB.DependencyIdentifier.UserControls
             this.colIsActivity.DisplayIndex = 2;
             this.colIsActivity.Text = "Is Activity";
             // 
-            // EntityListView
+            // DataListView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.pnlContainer);
-            this.Name = "EntityListView";
+            this.Name = "DataListView";
             this.Size = new System.Drawing.Size(618, 284);
             this.pnlContainer.ResumeLayout(false);
             this.pnlContainer.PerformLayout();

@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Maverick.XTB.DI.CustomAttributes
 {
-    public class DisplayNameAttribute : Attribute
+    public class DisplayAttribute : Attribute
     {
-        internal DisplayNameAttribute(string displayName)
+        internal DisplayAttribute(string displayName)
         {
             this.Name = displayName;
         }

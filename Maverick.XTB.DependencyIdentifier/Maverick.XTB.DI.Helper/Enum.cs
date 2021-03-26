@@ -23,25 +23,36 @@ namespace Maverick.XTB.DI.Helper
 
         public enum ComponentType
         {
-            [DisplayName("Forms")]
+            [Display("Entity")]
+            Entity = 1,
+
+            [Display("Forms")]
             SystemForm = 60,
 
-            [DisplayName("Attributes")]
+            [Display("Attributes")]
             Attribute = 2,
 
-            [DisplayName("Views")]
-            SavedQuery = 26
+            [Display("Views")]
+            SavedQuery = 26,
 
-            /* // List of attributes not supported as of now
-            Entity = 1,
+            [Display("Choice")]
+            OptionSet = 9,
+
+            [Display("Relationship")]
             Relationship = 3,
+
+            [Display("Entity Relationship")]
+            EntityRelationship = 10,
+
+            /*// List of attributes not supported as of now
+
             AttributePicklistValue = 4,
             AttributeLookupValue = 5,
             ViewAttribute = 6,
             LocalizedLabel = 7,
             RelationshipExtraCondition = 8,
-            OptionSet = 9,
-            EntityRelationship = 10,
+            
+            
             EntityRelationshipRole = 11,
             EntityRelationshipRelationships = 12,
             ManagedProperty = 13,
@@ -94,8 +105,7 @@ namespace Maverick.XTB.DI.Helper
             MobileOfflineProfileItem = 162,
             SimilarityRule = 165,
             CustomControl = 66,
-            CustomControlDefaultConfig = 68,
-            */
+            CustomControlDefaultConfig = 68*/
         }
     }
 }

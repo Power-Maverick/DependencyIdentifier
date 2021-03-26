@@ -1,6 +1,8 @@
-﻿using Maverick.XTB.DI.Helper;
+﻿using Maverick.XTB.DI.DataObjects;
+using Maverick.XTB.DI.Helper;
 using McTools.Xrm.Connection;
 using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Microsoft.Xrm.Sdk.Query;
 using System;
@@ -58,6 +60,50 @@ namespace Maverick.XTB.DependencyIdentifier
             });
         }
 
+        private void ExecuteDependencyIdentifier()
+        {
+            List<DependencyReport> dependentComponents = new List<DependencyReport>();
+
+            foreach (EntityMetadata entityMetadata in dlvEntities.SelectedData)
+            {
+                dependentComponents.AddRange(SanitizeDependencyReportList(entityMetadata.SchemaName, DataverseHelper.GetDependencyList(Service, entityMetadata.MetadataId.Value, (int)Enum.ComponentType.Entity)));
+            }
+
+            dataGridView1.DataSource = dependentComponents;
+            ColumnResize();
+        }
+
+        private List<DependencyReport> SanitizeDependencyReportList(string entityName, List<DependencyReport> dependentComponents)
+        {
+            foreach (DependencyReport dr in dependentComponents)
+            {
+                dr.EntitySchemaName = entityName;
+                if (dr.DependentComponentType == Enum.ComponentType.Entity.ToString())
+                {
+                    dr.DependentComponentName = dlvEntities.Entities
+                                                    .FirstOrDefault(e => e.MetadataId == new Guid(dr.DependentComponentName))
+                                                    .SchemaName;
+                }
+                if (dr.RequiredComponentType == Enum.ComponentType.Entity.ToString())
+                {
+                    dr.RequiredComponentName = dlvEntities.Entities
+                                                    .FirstOrDefault(e => e.MetadataId == new Guid(dr.RequiredComponentName))
+                                                    .SchemaName;
+                }
+            }
+
+            return dependentComponents;
+        }
+
+        private void ColumnResize()
+        {
+            dataGridView1.Columns[0].Width = 150; // Entity Schema
+            dataGridView1.Columns[1].Width = 200; // Dependent Component
+            dataGridView1.Columns[2].Width = 200; // Dependent Component Type
+            dataGridView1.Columns[3].Width = 200; // Required Component
+            dataGridView1.Columns[4].Width = 200; // Required Component Type
+        }
+
         #endregion
 
         #region Logger
@@ -85,10 +131,16 @@ namespace Maverick.XTB.DependencyIdentifier
 
         #endregion
 
+        #region Constructor
+
         public DependencyIdentifierControl()
         {
             InitializeComponent();
         }
+
+        #endregion
+
+        #region Plugin Control Private Events
 
         private void DependencyIdentifierControl_Load(object sender, EventArgs e)
         {
@@ -143,5 +195,19 @@ namespace Maverick.XTB.DependencyIdentifier
                 lblSelectedEntities.Text += $"{data.DisplayName?.UserLocalizedLabel?.Label}\n";
             }
         }
+
+        private void tsbCloseTool_Click(object sender, EventArgs e)
+        {
+            Log("Close", Enum.LogLevel.Info);
+            CloseTool();
+        }
+
+        private void btnGenerateDependencies_Click(object sender, EventArgs e)
+        {
+            dlvEntities.ClearSearchText();
+            ExecuteDependencyIdentifier();
+        }
+
+        #endregion
     }
 }

@@ -3,13 +3,13 @@
   <PropertyGroup>
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
-    <SharedGUID>84c51966-f31c-4927-aa5f-ecfb0343ef73</SharedGUID>
+    <SharedGUID>564f9bf9-65a7-4053-bfe1-89ebdd5b064c</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Maverick.XTB.DI.DataObjects</Import_RootNamespace>
+    <Import_RootNamespace>Maverick.XTB.DI.EarlyBoundEntities</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)DependencyReport.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ListViewColumnDefinition.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CrmServiceContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Dependency.cs" />
   </ItemGroup>
 </Project>

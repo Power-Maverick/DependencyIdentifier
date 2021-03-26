@@ -56,6 +56,12 @@ namespace Maverick.XTB.DependencyIdentifier.UserControls
             PopulateControls();
         }
 
+        [Description("Clear Search Text")]
+        public void ClearSearchText()
+        {
+            txtSearch.Clear();
+        }
+
         [Description("Event that fires when the list of Checked Items changes")]
         public event EventHandler CheckedItemsChanged;
 
@@ -228,7 +234,7 @@ namespace Maverick.XTB.DependencyIdentifier.UserControls
 
             foreach (var ct in lstComponentTypes)
             {
-                var text = ct.GetAttribute<DI.CustomAttributes.DisplayNameAttribute>();
+                var text = ct.GetAttribute<DI.CustomAttributes.DisplayAttribute>();
 
                 var lvItem = new ListViewItem()
                 {
