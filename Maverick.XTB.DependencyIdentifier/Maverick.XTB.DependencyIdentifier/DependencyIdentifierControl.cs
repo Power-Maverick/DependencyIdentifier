@@ -24,6 +24,7 @@ namespace Maverick.XTB.DependencyIdentifier
         #region Private Variables
 
         private Settings mySettings;
+        private BackgroundWorker _mainPluginLocalWorker;
 
         #endregion
 
@@ -66,11 +67,41 @@ namespace Maverick.XTB.DependencyIdentifier
 
             foreach (EntityMetadata entityMetadata in dlvEntities.SelectedData)
             {
-                dependentComponents.AddRange(SanitizeDependencyReportList(entityMetadata.SchemaName, DataverseHelper.GetDependencyList(Service, entityMetadata.MetadataId.Value, (int)Enum.ComponentType.Entity)));
+                WorkAsync(new WorkAsyncInfo
+                {
+                    Message = $"Generating dependency...",
+                    Work = (worker, args) =>
+                    {
+                        args.Result = DataverseHelper.GetDependencyList(Service, entityMetadata.MetadataId.Value, (int)Enum.ComponentType.Entity);
+                        //label2.Text += $"Generating dependency for {entityMetadata.SchemaName}...";
+                        
+                    },
+                    PostWorkCallBack = (args) =>
+                    {
+                        if (args.Error != null)
+                        {
+                            MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            Log(args.Error.ToString(), Enum.LogLevel.Error);
+                        }
+                        else
+                        {
+                            dependentComponents.AddRange(SanitizeDependencyReportList(entityMetadata.SchemaName, (List<DependencyReport>)args.Result));
+
+                            dataGridView1.DataSource = null;
+                            dataGridView1.DataSource = dependentComponents;
+                            ColumnResize();
+                        }
+                    }
+                });
             }
 
-            dataGridView1.DataSource = dependentComponents;
-            ColumnResize();
+            
+
+            //Invoke(new Action(() =>
+            //{
+
+
+            //}));
         }
 
         private List<DependencyReport> SanitizeDependencyReportList(string entityName, List<DependencyReport> dependentComponents)
@@ -98,7 +129,7 @@ namespace Maverick.XTB.DependencyIdentifier
         private void ColumnResize()
         {
             dataGridView1.Columns[0].Width = 150; // Entity Schema
-            dataGridView1.Columns[1].Width = 200; // Dependent Component
+            dataGridView1.Columns[1].Width = 300; // Dependent Component
             dataGridView1.Columns[2].Width = 200; // Dependent Component Type
             dataGridView1.Columns[3].Width = 200; // Required Component
             dataGridView1.Columns[4].Width = 200; // Required Component Type
@@ -206,6 +237,8 @@ namespace Maverick.XTB.DependencyIdentifier
         {
             dlvEntities.ClearSearchText();
             ExecuteDependencyIdentifier();
+            //_mainPluginLocalWorker = new BackgroundWorker();
+            //_mainPluginLocalWorker.DoWork += ;
         }
 
         #endregion

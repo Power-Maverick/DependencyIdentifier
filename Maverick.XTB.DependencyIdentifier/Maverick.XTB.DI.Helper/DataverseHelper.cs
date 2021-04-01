@@ -71,7 +71,11 @@ namespace Maverick.XTB.DI.Helper
 
             foreach (Entity dependentEntity in dependencyResponse.EntityCollection.Entities)
             {
-                lstReport.Add(GenerateDependencyReport(dependentEntity));
+                DependencyReport dr = GenerateDependencyReport(dependentEntity);
+                if (!dr.SkipAdding)
+                {
+                    lstReport.Add(dr);
+                }
             }
 
             return lstReport;
@@ -100,6 +104,11 @@ namespace Maverick.XTB.DI.Helper
                 }
             }
 
+            if (string.IsNullOrEmpty(dependencyReport.DependentComponentType) || string.IsNullOrEmpty(dependencyReport.RequiredComponentType))
+            {
+                dependencyReport.SkipAdding = true;
+            }
+
             dependencyReport.DependentComponentName = GetComponentName(((OptionSetValue)dependency["dependentcomponenttype"]).Value, (Guid)dependency["dependentcomponentobjectid"]);
             dependencyReport.RequiredComponentName = GetComponentName(((OptionSetValue)dependency["requiredcomponenttype"]).Value, (Guid)dependency["requiredcomponentobjectid"]);
 
@@ -122,8 +131,17 @@ namespace Maverick.XTB.DI.Helper
                 case (int)Enum.ComponentType.OptionSet:
                     name = GetGlobalOptionSetName(componentId);
                     break;
+                case (int)Enum.ComponentType.SystemForm:
+                    name = GetFormDisplayName(componentId);
+                    break;
+                case (int)Enum.ComponentType.EntityRelationship:
+                    name = GetEntityRelationshipName(componentId);
+                    break;
+                case (int)Enum.ComponentType.SavedQuery:
+                    name = "To Be Implemented";
+                    break;
                 default:
-                    name = "not implemented";
+                    name = "Not Implemented";
                     break;
             }
 
@@ -133,30 +151,54 @@ namespace Maverick.XTB.DI.Helper
 
         private static string GetAttributeInformation(Guid id)
         {
-            string attributeInformation = "";
             RetrieveAttributeRequest req = new RetrieveAttributeRequest
             {
                 MetadataId = id
             };
             RetrieveAttributeResponse resp = (RetrieveAttributeResponse)Service.Execute(req);
             AttributeMetadata attmet = resp.AttributeMetadata;
-            attributeInformation = attmet.SchemaName + " : " + attmet.DisplayName.UserLocalizedLabel.Label;
+            string attributeInformation = $"{attmet.SchemaName} ({attmet.DisplayName.UserLocalizedLabel.Label})";
 
             return attributeInformation;
         }
         
         private static string GetGlobalOptionSetName(Guid id)
         {
-            string name = "";
             RetrieveOptionSetRequest req = new RetrieveOptionSetRequest
             {
                 MetadataId = id
             };
             RetrieveOptionSetResponse resp = (RetrieveOptionSetResponse)Service.Execute(req);
-            OptionSetMetadataBase os = (OptionSetMetadataBase)resp.OptionSetMetadata;
-            name = os.DisplayName.UserLocalizedLabel.Label;
+            OptionSetMetadataBase os = resp.OptionSetMetadata;
+            string name = os.DisplayName.UserLocalizedLabel.Label;
 
             return name;
+        }
+
+        private static string GetFormDisplayName(Guid id)
+        {
+            Entity eForm = Service.Retrieve("systemform", id, new ColumnSet("name", "objecttypecode", "type"));
+            OptionSetValue formType = (OptionSetValue)eForm["type"];
+            string name = $"{eForm["name"]} ({GetFormTypeName(formType.Value)})";
+
+            return name;
+        }
+
+        private static string GetEntityRelationshipName(Guid id)
+        {
+            RetrieveRelationshipRequest req = new RetrieveRelationshipRequest
+            {
+                MetadataId = id
+            };
+            RetrieveRelationshipResponse resp = (RetrieveRelationshipResponse)Service.Execute(req);
+            string name = $"{resp.RelationshipMetadata.SchemaName} ({resp.RelationshipMetadata.RelationshipType})";
+
+            return name;
+        }
+
+        private static string GetFormTypeName(int type)
+        {
+            return System.Enum.GetName(typeof(Enum.FormType), type);
         }
 
         #endregion

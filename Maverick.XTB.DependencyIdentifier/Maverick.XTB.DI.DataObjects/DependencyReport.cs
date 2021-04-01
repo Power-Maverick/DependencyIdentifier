@@ -7,6 +7,11 @@ namespace Maverick.XTB.DI.DataObjects
 {
     public class DependencyReport
     {
+        public DependencyReport()
+        {
+            SkipAdding = false;
+        }
+
         [DisplayName("Entity Schema Name")]
         public string EntitySchemaName { get; set; }
         [DisplayName("Dependent Component")]
@@ -17,6 +22,8 @@ namespace Maverick.XTB.DI.DataObjects
         public string RequiredComponentName { get; set; }
         [DisplayName("Required Component Type")]
         public string RequiredComponentType { get; set; }
+        [Browsable(false)]
+        public bool SkipAdding { get; set; }
 
     }
 }

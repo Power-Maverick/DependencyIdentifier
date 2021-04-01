@@ -21,6 +21,27 @@ namespace Maverick.XTB.DI.Helper
             ComponentTypes
         }
 
+        public enum FormType
+        {
+            Dashboard = 0,
+            AppointmentBook = 1,
+            Main = 2,
+            MiniCampaignBO = 3,
+            Preview = 4,
+            MobileExpress = 5,
+            QuickView = 6,
+            QuickCreate = 7,
+            Dialog = 8,
+            TaskFlow = 9,
+            InteractionCentricDashboard = 10,
+            Card = 11,
+            MainInteractiveExperience = 12,
+            Other = 13,
+            MainBackup = 14,
+            AppointmentBookBackup = 15,
+            PowerBIDashboard = 16
+        }
+
         public enum ComponentType
         {
             [Display("Entity")]
@@ -38,9 +59,6 @@ namespace Maverick.XTB.DI.Helper
             [Display("Choice")]
             OptionSet = 9,
 
-            [Display("Relationship")]
-            Relationship = 3,
-
             [Display("Entity Relationship")]
             EntityRelationship = 10,
 
@@ -51,7 +69,7 @@ namespace Maverick.XTB.DI.Helper
             ViewAttribute = 6,
             LocalizedLabel = 7,
             RelationshipExtraCondition = 8,
-            
+            Relationship = 3,
             
             EntityRelationshipRole = 11,
             EntityRelationshipRelationships = 12,
