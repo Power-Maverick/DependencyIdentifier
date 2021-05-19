@@ -42,6 +42,13 @@ namespace Maverick.XTB.DI.Helper
             PowerBIDashboard = 16
         }
 
+        public enum SdkMessageStepStage
+        {
+            PreValidation = 10,
+            PreOperation = 20,
+            PostOperation = 40
+        }
+
         public enum ComponentType
         {
             [Display("Entity")]
@@ -62,14 +69,39 @@ namespace Maverick.XTB.DI.Helper
             [Display("Entity Relationship")]
             EntityRelationship = 10,
 
+            [Display("Plugin Step")]
+            SDKMessageProcessingStep = 92,
+
+            [Display("Entity Map")]
+            EntityMap = 46,
+
+            [Display("Model-driven App")]
+            ModelDrivenApp = 80,
+
+            [Display("Sitemap")]
+            SiteMap = 62,
+
+            [Display("Mobile Offline Profile")]
+            MobileOfflineProfile = 161,
+
+            [Display("Email Template")]
+            EmailTemplate = 36,
+
+            [Display("Mail Merge Template")]
+            MailMergeTemplate = 39,
+
+            [Display("Report")]
+            Report = 31,
+
             /*// List of attributes not supported as of now
 
+            Relationship = 3,
             AttributePicklistValue = 4,
             AttributeLookupValue = 5,
             ViewAttribute = 6,
             LocalizedLabel = 7,
             RelationshipExtraCondition = 8,
-            Relationship = 3,
+            
             
             EntityRelationshipRole = 11,
             EntityRelationshipRelationships = 12,
@@ -81,19 +113,20 @@ namespace Maverick.XTB.DI.Helper
             DisplayStringMap = 23,
             Form = 24,
             Organization = 25,
+
             Workflow = 29,
-            Report = 31,
+            
             ReportEntity = 32,
             ReportCategory = 33,
             ReportVisibility = 34,
             Attachment = 35,
-            EmailTemplate = 36,
+            
             ContractTemplate = 37,
             KBArticleTemplate = 38,
-            MailMergeTemplate = 39,
+            
             DuplicateRule = 44,
             DuplicateRuleCondition = 45,
-            EntityMap = 46,
+            
             AttributeMap = 47,
             RibbonCommand = 48,
             RibbonContextGroup = 49,
@@ -103,13 +136,17 @@ namespace Maverick.XTB.DI.Helper
             RibbonDiff = 55,
             SavedQueryVisualization = 59,
             WebResource = 61,
-            SiteMap = 62,
+            
             ConnectionRole = 63,
+            HierarchyRule = 65,
+            CustomControl = 66,
+            CustomControlDefaultConfig = 68,
             FieldSecurityProfile = 70,
             FieldPermission = 71,
+            
             PluginType = 90,
             PluginAssembly = 91,
-            SDKMessageProcessingStep = 92,
+            
             SDKMessageProcessingStepImage = 93,
             ServiceEndpoint = 95,
             RoutingRule = 150,
@@ -118,12 +155,23 @@ namespace Maverick.XTB.DI.Helper
             SLAItem = 153,
             ConvertRule = 154,
             ConvertRuleItem = 155,
-            HierarchyRule = 65,
-            MobileOfflineProfile = 161,
+            
+            
             MobileOfflineProfileItem = 162,
             SimilarityRule = 165,
-            CustomControl = 66,
-            CustomControlDefaultConfig = 68*/
+            DataSourceMapping = 166,
+            SDKMessage = 201,
+            SDKMessageFilter = 202,
+            SdkMessagePair = 203,
+            SdkMessageRequest = 204,
+            SdkMessageRequestField = 205,
+            SdkMessageResponse = 206,
+            SdkMessageResponseField = 207,
+            Import Map = 208,
+            WebWizard = 210,
+            Canvas App = 300,
+            Connector = 371,
+            */
         }
     }
 }

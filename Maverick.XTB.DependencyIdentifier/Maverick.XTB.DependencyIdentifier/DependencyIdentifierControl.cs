@@ -1,10 +1,12 @@
 ﻿using Maverick.XTB.DI.DataObjects;
 using Maverick.XTB.DI.Helper;
 using McTools.Xrm.Connection;
+using Microsoft.Crm.Sdk.Messages;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Microsoft.Xrm.Sdk.Query;
+using Microsoft.Xrm.Tooling.Connector;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,6 +23,8 @@ namespace Maverick.XTB.DependencyIdentifier
 {
     public partial class DependencyIdentifierControl : PluginControlBase
     {
+        const int maxRequestsPerBatch = 100;
+
         #region Private Variables
 
         private Settings mySettings;
@@ -63,9 +67,85 @@ namespace Maverick.XTB.DependencyIdentifier
 
         private void ExecuteDependencyIdentifier()
         {
-            List<DependencyReport> dependentComponents = new List<DependencyReport>();
+            dataGridView1.DataSource = null;
+            ExecuteMultipleResponse response = new ExecuteMultipleResponse();
+            //List<DependencyReport> dependentComponents = new List<DependencyReport>();
 
-            foreach (EntityMetadata entityMetadata in dlvEntities.SelectedData)
+            WorkAsync(new WorkAsyncInfo
+            {
+                Message = $"Generating dependency...",
+                Work = (worker, args) =>
+                {
+                    List<DependencyReport> dependentComponents = new List<DependencyReport>();
+
+                    if (Service is CrmServiceClient svc)
+                    {
+                        Parallel.ForEach(dlvEntities.SelectedData,
+                            new ParallelOptions { MaxDegreeOfParallelism = 10 },
+                            () => new
+                            {
+                                Service = svc.Clone(),
+                                EMRequest = new ExecuteMultipleRequest
+                                {
+                                    Requests = new OrganizationRequestCollection(),
+                                    Settings = new ExecuteMultipleSettings
+                                    {
+                                        ContinueOnError = false,
+                                        ReturnResponses = true
+                                    }
+                                }
+                            },
+                            (obj, loopState, index, threadLocalState) =>
+                            {
+                                EntityMetadata entityMetadata = (EntityMetadata)obj;
+                                threadLocalState.EMRequest.Requests.Add(new RetrieveDependentComponentsRequest
+                                {
+                                    ObjectId = entityMetadata.MetadataId.Value,
+                                    ComponentType = (int)Enum.ComponentType.Entity
+                                });
+
+                                return threadLocalState;
+                            },
+                            (threadLocalState) =>
+                            {
+                                if (threadLocalState.EMRequest.Requests.Count > 0)
+                                {
+                                    response = (ExecuteMultipleResponse)threadLocalState.Service.Execute(threadLocalState.EMRequest);
+                                    dependentComponents.AddRange(ProcessDependencies(threadLocalState.Service, dlvEntities.SelectedData, threadLocalState.EMRequest.Requests, response.Responses));
+                                }
+                                threadLocalState.Service.Dispose();
+                            });
+                    }
+                    else
+                    {
+                        Parallel.ForEach(dlvEntities.SelectedData,
+                        new ParallelOptions { MaxDegreeOfParallelism = 10 },
+                        (obj) =>
+                        {
+                            EntityMetadata entityMetadata = (EntityMetadata)obj;
+                            var dc = DataverseHelper.GetDependencyList(Service, entityMetadata.MetadataId.Value, (int)Enum.ComponentType.Entity);
+                            dependentComponents.AddRange(SanitizeDependencyReportList(entityMetadata.SchemaName, dc));
+                        });
+                    }
+
+                    args.Result = dependentComponents;
+                },
+                PostWorkCallBack = (args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Log(args.Error.ToString(), Enum.LogLevel.Error);
+                    }
+                    else
+                    {
+                        dataGridView1.DataSource = args.Result;
+                        ColumnResize();
+                    }
+                }
+            });
+
+            /*foreach (EntityMetadata entityMetadata in dlvEntities.SelectedData)
             {
                 WorkAsync(new WorkAsyncInfo
                 {
@@ -93,15 +173,52 @@ namespace Maverick.XTB.DependencyIdentifier
                         }
                     }
                 });
+            }*/
+
+        }
+
+        private List<DependencyReport> ProcessDependencies(CrmServiceClient svc, List<object> selectedEntities, OrganizationRequestCollection requests, ExecuteMultipleResponseItemCollection emrItems)
+        {
+            List<DependencyReport> dependentComponents = new List<DependencyReport>();
+
+            // Display the results returned in the responses.
+            foreach (var responseItem in emrItems)
+            {
+                var request = (RetrieveDependentComponentsRequest)requests[responseItem.RequestIndex];
+                var entityMetadata = selectedEntities
+                                        .Cast<EntityMetadata>()
+                                        .FirstOrDefault(e => e.MetadataId.Value == request.ObjectId);
+
+                // A valid response.
+                if (responseItem.Response != null)
+                {
+                    EntityCollection dependencies = (EntityCollection)responseItem.Response.Results["EntityCollection"];
+                    var dc = DataverseHelper.ProcessDependencyList(svc, dependencies);
+                    dependentComponents.AddRange(SanitizeDependencyReportList(entityMetadata.SchemaName, dc));
+                }
             }
 
-            
+            return dependentComponents;
 
-            //Invoke(new Action(() =>
-            //{
+            /*foreach (var responseItem in emrItems)
+            {
+                // A valid response.
+                if (responseItem.Response != null)
+                {
+                    
+                    EntityCollection dependencies = (EntityCollection)responseItem.Response.Results["EntityCollection"];
+                    var dc = DataverseHelper.ProcessDependencyList(Service, dependencies);
+                }
 
+                // A valid response.
+                if (responseItem.Response != null)
+                    DisplayResponse(requests.[responseItem.RequestIndex], responseItem.Response);
 
-            //}));
+                // An error has occurred.
+                else if (responseItem.Fault != null)
+                    DisplayFault(requestWithResults.Requests[responseItem.RequestIndex],
+                        responseItem.RequestIndex, responseItem.Fault);
+            }*/
         }
 
         private List<DependencyReport> SanitizeDependencyReportList(string entityName, List<DependencyReport> dependentComponents)

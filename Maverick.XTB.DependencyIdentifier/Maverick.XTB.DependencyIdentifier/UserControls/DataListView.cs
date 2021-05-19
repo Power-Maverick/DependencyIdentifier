@@ -187,7 +187,7 @@ namespace Maverick.XTB.DependencyIdentifier.UserControls
 
                 var props = typeof(EntityMetadata).GetProperties().ToDictionary(p => p.Name, p => p);
 
-                foreach (var item in Entities)
+                foreach (var item in Entities.OrderBy(en => en.IsManaged))
                 {
                     var col = cols[0];
                     var colDef = col.Tag as ListViewColumnDefinition;
