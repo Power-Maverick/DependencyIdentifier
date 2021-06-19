@@ -26,7 +26,7 @@ steps:
 - task: PowerShell@2
   displayName: 'Update Version'
   inputs:
-    filePath: 'assemblyversion.ps1'
+    filePath: '.build/assemblyversion.ps1'
     arguments: '$(buildNumber)'
 
 - task: VSBuild@1
