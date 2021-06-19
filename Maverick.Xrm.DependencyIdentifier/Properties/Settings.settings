@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Maverick.Xrm.DependencyIdentifier.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="AppInsightsInstrumentationKey" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">7f6a1e34-3eb5-4799-8f33-dfe982fb8208</Value>
+    </Setting>
+    <Setting Name="SecretKey" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">DanArunLinn-Maverick</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

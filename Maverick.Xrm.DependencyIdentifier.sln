@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Maverick.Xrm.DI.Helper", "Maverick.Xrm.DI.Helper\Maverick.Xrm.DI.Helper.shproj", "{CE8F8ED4-B52A-4544-ABE3-8D521AE4B410}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Maverick.Xrm.DI.Extensions", "Maverick.Xrm.DI.Extensions\Maverick.Xrm.DI.Extensions.shproj", "{40BCD842-DE98-4CE8-804B-B49983C03FE7}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Maverick.XTB.DI.EarlyBoundEntities", "Maverick.Xrm.DI.EarlyBoundEntities\Maverick.XTB.DI.EarlyBoundEntities.shproj", "{564F9BF9-65A7-4053-BFE1-89EBDD5B064C}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Maverick.Xrm.DI.DataObjects", "Maverick.Xrm.DI.DataObjects\Maverick.Xrm.DI.DataObjects.shproj", "{84C51966-F31C-4927-AA5F-ECFB0343EF73}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Maverick.Xrm.DI.CustomAttributes", "Maverick.Xrm.DI.CustomAttributes\Maverick.Xrm.DI.CustomAttributes.shproj", "{A2DBC47F-CFD9-4659-B513-8030129A6F0B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maverick.Xrm.DependencyIdentifier", "Maverick.Xrm.DependencyIdentifier\Maverick.Xrm.DependencyIdentifier.csproj", "{55E9E441-C233-48E6-ABDF-C8C9E51D98B9}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Maverick.Xrm.DI.Extensions\Maverick.Xrm.DI.Extensions.projitems*{40bcd842-de98-4ce8-804b-b49983c03fe7}*SharedItemsImports = 13
+		Maverick.Xrm.DI.CustomAttributes\Maverick.Xrm.DI.CustomAttributes.projitems*{55e9e441-c233-48e6-abdf-c8c9e51d98b9}*SharedItemsImports = 4
+		Maverick.Xrm.DI.DataObjects\Maverick.Xrm.DI.DataObjects.projitems*{55e9e441-c233-48e6-abdf-c8c9e51d98b9}*SharedItemsImports = 4
+		Maverick.Xrm.DI.Extensions\Maverick.Xrm.DI.Extensions.projitems*{55e9e441-c233-48e6-abdf-c8c9e51d98b9}*SharedItemsImports = 4
+		Maverick.Xrm.DI.Helper\Maverick.Xrm.DI.Helper.projitems*{55e9e441-c233-48e6-abdf-c8c9e51d98b9}*SharedItemsImports = 4
+		Maverick.Xrm.DI.EarlyBoundEntities\Maverick.Xrm.DI.EarlyBoundEntities.projitems*{564f9bf9-65a7-4053-bfe1-89ebdd5b064c}*SharedItemsImports = 13
+		Maverick.Xrm.DI.DataObjects\Maverick.Xrm.DI.DataObjects.projitems*{84c51966-f31c-4927-aa5f-ecfb0343ef73}*SharedItemsImports = 13
+		Maverick.Xrm.DI.CustomAttributes\Maverick.Xrm.DI.CustomAttributes.projitems*{a2dbc47f-cfd9-4659-b513-8030129a6f0b}*SharedItemsImports = 13
+		Maverick.Xrm.DI.Helper\Maverick.Xrm.DI.Helper.projitems*{ce8f8ed4-b52a-4544-abe3-8d521ae4b410}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{55E9E441-C233-48E6-ABDF-C8C9E51D98B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55E9E441-C233-48E6-ABDF-C8C9E51D98B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55E9E441-C233-48E6-ABDF-C8C9E51D98B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55E9E441-C233-48E6-ABDF-C8C9E51D98B9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EF8ED706-F970-430F-8A5C-FCA86A103528}
+	EndGlobalSection
+EndGlobal
