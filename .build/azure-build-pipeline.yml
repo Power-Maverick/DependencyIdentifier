@@ -13,31 +13,31 @@ variables:
 
 steps:
 - task: NuGetToolInstaller@1
-  name: NuGet Installer
+  displayName: 'NuGet Installer'
   inputs:
     versionSpec: 
     checkLatest: true
 
 - task: NuGetCommand@2
-  name: Restore NuGet packages
+  displayName: 'Restore NuGet packages'
   inputs:
     restoreSolution: '$(solution)'
 
 - task: PowerShell@2
-  name: Update Version
+  displayName: 'Update Version'
   inputs:
     filePath: 'assemblyversion.ps1'
     arguments: '$(buildNumber)'
 
 - task: VSBuild@1
-  name: Build Solution
+  displayName: 'Build Solution'
   inputs:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
 - task: VSTest@2
-  name: Test Solution
+  displayName: 'Test Solution'
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
@@ -49,21 +49,21 @@ steps:
 #     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
 - task: CopyFiles@2
-  name: Copy NuGet packaging file
+  displayName: 'Copy NuGet packaging file'
   inputs:
     SourceFolder: '$(build.sourcesDirectory)/.build/DependencyIdentifier.nuspec'
     Contents: 'DependencyIdentifier.nuspec'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
 - task: CopyFiles@2
-  name: Copy plugin files
+  displayName: 'Copy plugin files'
   inputs:
     SourceFolder: '$(build.sourcesDirectory)/Maverick.Xrm.DependencyIdentifier/bin/Release'
     Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/DependencyIdentifier/bin/Release'
 
 - task: PublishBuildArtifacts@1
-  name: Publish build files to Artifacts
+  displayName: 'Publish build files to Artifacts'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'buildfiles'
