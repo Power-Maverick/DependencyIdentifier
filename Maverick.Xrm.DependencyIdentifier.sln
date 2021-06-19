@@ -15,6 +15,13 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Maverick.Xrm.DI.CustomAttri
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maverick.Xrm.DependencyIdentifier", "Maverick.Xrm.DependencyIdentifier\Maverick.Xrm.DependencyIdentifier.csproj", "{55E9E441-C233-48E6-ABDF-C8C9E51D98B9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B3196CC9-FE38-4166-91BD-E10BB038EB0E}"
+	ProjectSection(SolutionItems) = preProject
+		.build\assemblyversion.ps1 = .build\assemblyversion.ps1
+		.build\azure-build-pipeline.yml = .build\azure-build-pipeline.yml
+		.build\DependencyIdentifier.nuspec = .build\DependencyIdentifier.nuspec
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Maverick.Xrm.DI.Extensions\Maverick.Xrm.DI.Extensions.projitems*{40bcd842-de98-4ce8-804b-b49983c03fe7}*SharedItemsImports = 13

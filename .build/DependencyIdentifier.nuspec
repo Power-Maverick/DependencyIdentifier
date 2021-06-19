@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Maverick.Xrm.DependencyIdentifier</id>
+    <version>0.0.1</version>
+    <title>Dependency Identifier</title>
+    <authors>Danish Naglekar</authors>
+    <owners>Power-Maverick</owners>
+    <projectUrl>https://github.com/Power-Maverick/DependencyIdentifier</projectUrl>
+    <iconUrl>https://github.com/Power-Maverick/DependencyIdentifier/blob/master/assets/DependencyIdentifier_Icon.png</iconUrl>
+    <icon>DependencyIdentifier_Icon.png</icon>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <repository type="git" url="https://github.com/Power-Maverick/DependencyIdentifier.git" branch="main" />
+    <license type="expression">MIT</license>
+    <description>Easily generate all the dependencies with respect to selected entities in one shot.</description>
+    <summary>Easily generate all the dependencies with respect to selected entities in one shot.</summary>
+    <releaseNotes>
+      Initial release - Private Preview
+    </releaseNotes>
+    <copyright>Copyright © Danish Naglekar</copyright>
+    <tags>XrmToolBox, Power Apps, Dataverse, Dependency Identifier</tags>
+    <dependencies>
+      <dependency id="XrmToolBox" version="1.2019.7.34" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="DependencyIdentifier\bin\Release\Maverick.Xrm.DependencyIdentifier.dll" target="lib\net462\Plugins" />
+    <file src="DependencyIdentifier\assets\DependencyIdentifier_Icon.png" target="" />
+  </files>
+</package>

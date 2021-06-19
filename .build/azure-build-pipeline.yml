@@ -13,26 +13,31 @@ variables:
 
 steps:
 - task: NuGetToolInstaller@1
+  name: NuGet Installer
   inputs:
     versionSpec: 
     checkLatest: true
 
 - task: NuGetCommand@2
+  name: Restore NuGet packages
   inputs:
     restoreSolution: '$(solution)'
 
 - task: PowerShell@2
+  name: Update Version
   inputs:
     filePath: 'assemblyversion.ps1'
     arguments: '$(buildNumber)'
 
 - task: VSBuild@1
+  name: Build Solution
   inputs:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
 - task: VSTest@2
+  name: Test Solution
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
@@ -43,19 +48,22 @@ steps:
 #     Contents: 'ReleaseNotes.txt'
 #     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
-# - task: CopyFiles@2
-#   inputs:
-#     SourceFolder: '$(build.sourcesDirectory)'
-#     Contents: 'PCF-CustomControlBuilder.nuspec'
-#     TargetFolder: '$(Build.ArtifactStagingDirectory)'
+- task: CopyFiles@2
+  name: Copy NuGet packaging file
+  inputs:
+    SourceFolder: '$(build.sourcesDirectory)/.build/DependencyIdentifier.nuspec'
+    Contents: 'DependencyIdentifier.nuspec'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
 - task: CopyFiles@2
+  name: Copy plugin files
   inputs:
     SourceFolder: '$(build.sourcesDirectory)/Maverick.Xrm.DependencyIdentifier/bin/Release'
     Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/DependencyIdentifier/bin/Release'
 
 - task: PublishBuildArtifacts@1
+  name: Publish build files to Artifacts
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'buildfiles'
