@@ -230,6 +230,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Icon\MainIcon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="ILMergeOrder.txt" />
   </ItemGroup>
   <Import Project="..\Maverick.Xrm.DI.Helper\Maverick.Xrm.DI.Helper.projitems" Label="Shared" />

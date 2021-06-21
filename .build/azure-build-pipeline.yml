@@ -51,7 +51,7 @@ steps:
 - task: CopyFiles@2
   displayName: 'Copy NuGet packaging file'
   inputs:
-    SourceFolder: '$(build.sourcesDirectory)/.build/DependencyIdentifier.nuspec'
+    SourceFolder: '$(build.sourcesDirectory)/.build'
     Contents: 'DependencyIdentifier.nuspec'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 

@@ -8,7 +8,7 @@
     <owners>Power-Maverick</owners>
     <projectUrl>https://github.com/Power-Maverick/DependencyIdentifier</projectUrl>
     <iconUrl>https://github.com/Power-Maverick/DependencyIdentifier/blob/master/assets/DependencyIdentifier_Icon.png</iconUrl>
-    <icon>DependencyIdentifier_Icon.png</icon>
+    <icon>MainIcon.png</icon>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <repository type="git" url="https://github.com/Power-Maverick/DependencyIdentifier.git" branch="main" />
     <license type="expression">MIT</license>
@@ -25,6 +25,6 @@
   </metadata>
   <files>
     <file src="DependencyIdentifier\bin\Release\Maverick.Xrm.DependencyIdentifier.dll" target="lib\net462\Plugins" />
-    <file src="DependencyIdentifier\assets\DependencyIdentifier_Icon.png" target="" />
+    <file src="DependencyIdentifier\bin\Release\MainIcon.png" target="" />
   </files>
 </package>
