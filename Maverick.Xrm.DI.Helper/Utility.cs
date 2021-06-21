@@ -56,7 +56,7 @@ namespace Maverick.Xrm.DI.Helper
                     var label = (Microsoft.Xrm.Sdk.Label)dataValue;
                     if (label.LocalizedLabels.Count > 0)
                     {
-                        var localLabel = label.LocalizedLabels.Where(l => l.LanguageCode == languageCode).First();
+                        var localLabel = label.LocalizedLabels.Where(l => l.LanguageCode == languageCode).FirstOrDefault();
                         if (localLabel != null)
                         {
                             dataValue = localLabel.Label;
@@ -70,11 +70,6 @@ namespace Maverick.Xrm.DI.Helper
             }
 
             return propValue;
-        }
-
-        public static void CheckSecretKey()
-        { 
-        
         }
 
     }

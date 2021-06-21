@@ -212,6 +212,16 @@ namespace Maverick.Xrm.DependencyIdentifier
             dataGridView1.Columns[4].Width = 200; // Required Component Type
         }
 
+        private void EnsureServiceIsAvailable()
+        {
+            ExecuteMethod(WhoAmI);
+        }
+
+        private void WhoAmI()
+        {
+            Service.Execute(new WhoAmIRequest());
+        }
+
         #endregion
 
         #region Logger
@@ -268,6 +278,8 @@ namespace Maverick.Xrm.DependencyIdentifier
             PrivatePreview frmPrivatePreview = new PrivatePreview();
             frmPrivatePreview.StartPosition = FormStartPosition.CenterScreen;
             frmPrivatePreview.ShowDialog();
+
+            EnsureServiceIsAvailable();
         }
 
         private void DependencyIdentifierControl_OnCloseTool(object sender, EventArgs e)
