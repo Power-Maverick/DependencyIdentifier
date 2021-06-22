@@ -118,14 +118,17 @@ namespace Maverick.Xrm.DI.Helper
                 }
             }
 
+            dependencyReport.DependentComponentName = GetComponentName(((OptionSetValue)dependency["dependentcomponenttype"]).Value, (Guid)dependency["dependentcomponentobjectid"]);
+            dependencyReport.RequiredComponentName = GetComponentName(((OptionSetValue)dependency["requiredcomponenttype"]).Value, (Guid)dependency["requiredcomponentobjectid"]);
+
             // Disabled for testing
-            if (string.IsNullOrEmpty(dependencyReport.DependentComponentType) || string.IsNullOrEmpty(dependencyReport.RequiredComponentType))
+            if (string.IsNullOrEmpty(dependencyReport.DependentComponentType) 
+                || string.IsNullOrEmpty(dependencyReport.RequiredComponentType)
+                || string.IsNullOrEmpty(dependencyReport.DependentComponentName)
+                || string.IsNullOrEmpty(dependencyReport.RequiredComponentName))
             {
                 dependencyReport.SkipAdding = true;
             }
-
-            dependencyReport.DependentComponentName = GetComponentName(((OptionSetValue)dependency["dependentcomponenttype"]).Value, (Guid)dependency["dependentcomponentobjectid"]);
-            dependencyReport.RequiredComponentName = GetComponentName(((OptionSetValue)dependency["requiredcomponenttype"]).Value, (Guid)dependency["requiredcomponentobjectid"]);
 
             return dependencyReport;
         }
@@ -133,7 +136,7 @@ namespace Maverick.Xrm.DI.Helper
         // The name or display name of the component depends on the type of component.
         private static string GetComponentName(int componentType, Guid componentId)
         {
-            string name = "";
+            string name = string.Empty;
 
             switch (componentType)
             {
@@ -227,82 +230,122 @@ namespace Maverick.Xrm.DI.Helper
 
         private static string GetFormDisplayName(Guid id)
         {
+            string name = string.Empty;
             Entity eForm = Service.Retrieve("systemform", id, new ColumnSet("name", "objecttypecode", "type"));
-            OptionSetValue formType = (OptionSetValue)eForm["type"];
-            string name = $"{eForm["name"]} ({ParseFormTypeName(formType.Value)})";
+            if (eForm != null)
+            {
+                OptionSetValue formType = (OptionSetValue)eForm["type"];
+                name = $"{eForm["name"]} ({ParseFormTypeName(formType.Value)})";
+            }
 
             return name;
         }
 
         private static string GetSavedQueryName(Guid id)
         {
+            string name = string.Empty;
             Entity eSavedQuery = Service.Retrieve("savedquery", id, new ColumnSet("name", "returnedtypecode"));
-            string name = $"{eSavedQuery["name"]} ({eSavedQuery["returnedtypecode"]})";
+            if (eSavedQuery != null)
+            {
+                name = $"{eSavedQuery["name"]} ({eSavedQuery["returnedtypecode"]})"; 
+            }
 
             return name;
         }
 
         private static string GetEntityMapName(Guid id)
         {
+            string name = string.Empty;
             Entity eEntityMap = Service.Retrieve("entitymap", id, new ColumnSet("sourceentityname", "targetentityname"));
-            string name = $"Source: {eEntityMap["sourceentityname"]} | Target: {eEntityMap["targetentityname"]}";
+            if (eEntityMap != null)
+            {
+                name = $"Source: {eEntityMap["sourceentityname"]} | Target: {eEntityMap["targetentityname"]}"; 
+            }
 
             return name;
         }
 
         private static string GetModelDrivenAppName(Guid id)
         {
+            string name = string.Empty;
             Entity eAppModule = Service.Retrieve("appmodule", id, new ColumnSet("name"));
-            string name = $"{eAppModule["name"]}";
+            if (eAppModule != null)
+            {
+                name = $"{eAppModule["name"]}"; 
+            }
 
             return name;
         }
 
         private static string GetSitemapName(Guid id)
         {
+            string name = string.Empty;
             Entity eSitemap = Service.Retrieve("sitemap", id, new ColumnSet(true));
-            string name = $"{eSitemap["sitemapname"]}";
+            if (eSitemap != null)
+            {
+                name = $"{eSitemap["sitemapname"]}"; 
+            }
 
             return name;
         }
 
         private static string GetMobileProfileName(Guid id)
         {
+            string name = string.Empty;
             Entity eMobileProfile = Service.Retrieve("mobileofflineprofile", id, new ColumnSet("name"));
-            string name = $"{eMobileProfile["name"]}";
+            if (eMobileProfile != null)
+            {
+                name = $"{eMobileProfile["name"]}"; 
+            }
 
             return name;
         }
 
         private static string GetEmailTemplateName(Guid id)
         {
+            string name = string.Empty;
             Entity eEmailTemplate = Service.Retrieve("template", id, new ColumnSet("title"));
-            string name = $"{eEmailTemplate["title"]}";
+            if (eEmailTemplate != null)
+            {
+                name = $"{eEmailTemplate["title"]}"; 
+            }
 
             return name;
         }
 
         private static string GetMailMergeTemplateName(Guid id)
         {
+            string name = string.Empty;
             Entity eMailMerge = Service.Retrieve("mailmergetemplate", id, new ColumnSet("name"));
-            string name = $"{eMailMerge["name"]}";
+            if (eMailMerge != null)
+            {
+                name = $"{eMailMerge["name"]}"; 
+            }
 
             return name;
         }
 
         private static string GetReportName(Guid id)
         {
+            string name = string.Empty;
             Entity eReport = Service.Retrieve("report", id, new ColumnSet("name"));
-            string name = $"{eReport["name"]}";
+            if (eReport != null)
+            {
+                name = $"{eReport["name"]}"; 
+            }
 
             return name;
         }
 
         private static string GetSdkMessageProcessingStepName(Guid id)
         {
+            string name = string.Empty;
             Entity eSdkMessage = Service.Retrieve("sdkmessageprocessingstep", id, new ColumnSet("name", "stage"));
-            OptionSetValue pluginStage = (OptionSetValue)eSdkMessage["stage"];
-            string name = $"{eSdkMessage["name"]} ({ParseSdkMessageStepStage(pluginStage.Value)})";
+            if (eSdkMessage != null)
+            {
+                OptionSetValue pluginStage = (OptionSetValue)eSdkMessage["stage"];
+                name = $"{eSdkMessage["name"]} ({ParseSdkMessageStepStage(pluginStage.Value)})"; 
+            }
 
             return name;
         }

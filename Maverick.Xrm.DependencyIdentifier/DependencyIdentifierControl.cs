@@ -20,17 +20,25 @@ using XrmToolBox.Extensibility;
 using Maverick.Xrm.DependencyIdentifier.Forms;
 using Enum = Maverick.Xrm.DI.Helper.Enum;
 using Maverick.XTB.DI.Helper;
+using XrmToolBox.Extensibility.Interfaces;
 
 namespace Maverick.Xrm.DependencyIdentifier
 {
-    public partial class DependencyIdentifierControl : PluginControlBase
+    public partial class DependencyIdentifierControl : PluginControlBase, IGitHubPlugin, IHelpPlugin, IPayPalPlugin
     {
         const int maxRequestsPerBatch = 100;
 
+        #region XrmToolBox settings
+        private Settings pluginSettings;
+        public string RepositoryName => "DependencyIdentifier";
+        public string UserName => "Power-Maverick";
+        public string HelpUrl => "https://github.com/Power-Maverick/DependencyIdentifier/blob/main/README.md";
+        public string DonationDescription => "Thank you for your support.";
+        public string EmailAccount => "danz@techgeek.co.in";
+        #endregion
+
         #region Private Variables
 
-        private Settings mySettings;
-        private BackgroundWorker _mainPluginLocalWorker;
         private List<DependencyReport> dependentComponents;
         private Enum.UserOperations operations;
 
@@ -303,9 +311,9 @@ namespace Maverick.Xrm.DependencyIdentifier
             //ShowInfoNotification("This is a notification that can lead to XrmToolBox repository", new Uri("https://github.com/MscrmTools/XrmToolBox"));
 
             // Loads or creates the settings for the plugin
-            if (!SettingsManager.Instance.TryLoad(GetType(), out mySettings))
+            if (!SettingsManager.Instance.TryLoad(GetType(), out pluginSettings))
             {
-                mySettings = new Settings();
+                pluginSettings = new Settings();
                 LogWarning("Settings not found => a new settings file has been created!");
             }
             else
@@ -323,7 +331,7 @@ namespace Maverick.Xrm.DependencyIdentifier
         private void DependencyIdentifierControl_OnCloseTool(object sender, EventArgs e)
         {
             // Before leaving, save the settings
-            SettingsManager.Instance.Save(GetType(), mySettings);
+            SettingsManager.Instance.Save(GetType(), pluginSettings);
         }
 
         /// <summary>
@@ -333,9 +341,8 @@ namespace Maverick.Xrm.DependencyIdentifier
         {
             base.UpdateConnection(newService, detail, actionName, parameter);
 
-            if (mySettings != null && detail != null)
+            if (pluginSettings != null && detail != null)
             {
-                mySettings.LastUsedOrganizationWebappUrl = detail.WebApplicationUrl;
                 LogInfo("Connection has changed to: {0}", detail.WebApplicationUrl);
             }
         }
