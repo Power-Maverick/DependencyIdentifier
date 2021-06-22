@@ -49,6 +49,12 @@ namespace Maverick.Xrm.DI.Helper
             PostOperation = 40
         }
 
+        public enum UserOperations
+        {
+            EntitiesLoaded,
+            DependenciesGenerated
+        }
+
         public enum ComponentType
         {
             [Display("Entity")]

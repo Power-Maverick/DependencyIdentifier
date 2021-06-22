@@ -40,12 +40,15 @@ namespace Maverick.Xrm.DependencyIdentifier
             this.radDependenciesForDelete = new System.Windows.Forms.RadioButton();
             this.radAllDependencies = new System.Windows.Forms.RadioButton();
             this.pnlEntityListViewControl = new System.Windows.Forms.Panel();
-            this.dlvEntities = new Maverick.Xrm.DependencyIdentifier.UserControls.DataListView();
-            this.gboxEntityListView = new System.Windows.Forms.GroupBox();
-            this.lblSelectedEntities = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.btnGenerateDependencies = new System.Windows.Forms.Button();
+            this.lblSelectedEntities = new System.Windows.Forms.Label();
+            this.gboxEntityListView = new System.Windows.Forms.GroupBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.tsbGenerateDependencies = new System.Windows.Forms.ToolStripButton();
+            this.tsbExportDropDown = new System.Windows.Forms.ToolStripDropDownButton();
+            this.tsmiExportToCSV = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmiExportToExcel = new System.Windows.Forms.ToolStripMenuItem();
+            this.dlvEntities = new Maverick.Xrm.DependencyIdentifier.UserControls.DataListView();
             this.toolStripMenu.SuspendLayout();
             this.gboxDependencyType.SuspendLayout();
             this.pnlDependencyType.SuspendLayout();
@@ -61,7 +64,9 @@ namespace Maverick.Xrm.DependencyIdentifier
             this.tsbCloseTool,
             this.toolStripSeparator1,
             this.tsbLoadEntities,
-            this.tssSeparator1});
+            this.tssSeparator1,
+            this.tsbGenerateDependencies,
+            this.tsbExportDropDown});
             this.toolStripMenu.Location = new System.Drawing.Point(0, 0);
             this.toolStripMenu.Name = "toolStripMenu";
             this.toolStripMenu.Size = new System.Drawing.Size(1363, 31);
@@ -148,36 +153,8 @@ namespace Maverick.Xrm.DependencyIdentifier
             this.pnlEntityListViewControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlEntityListViewControl.Location = new System.Drawing.Point(3, 16);
             this.pnlEntityListViewControl.Name = "pnlEntityListViewControl";
-            this.pnlEntityListViewControl.Size = new System.Drawing.Size(647, 478);
+            this.pnlEntityListViewControl.Size = new System.Drawing.Size(647, 547);
             this.pnlEntityListViewControl.TabIndex = 8;
-            // 
-            // dlvEntities
-            // 
-            this.dlvEntities.DisplayType = Maverick.Xrm.DI.Helper.Enum.ListViewDisplayType.Entities;
-            this.dlvEntities.Entities = null;
-            this.dlvEntities.Location = new System.Drawing.Point(0, 0);
-            this.dlvEntities.Name = "dlvEntities";
-            this.dlvEntities.ShowSearchBox = true;
-            this.dlvEntities.Size = new System.Drawing.Size(436, 478);
-            this.dlvEntities.TabIndex = 0;
-            this.dlvEntities.CheckedItemsChanged += new System.EventHandler(this.dlvEntities_CheckedItemsChanged);
-            // 
-            // gboxEntityListView
-            // 
-            this.gboxEntityListView.Controls.Add(this.pnlEntityListViewControl);
-            this.gboxEntityListView.Location = new System.Drawing.Point(21, 120);
-            this.gboxEntityListView.Name = "gboxEntityListView";
-            this.gboxEntityListView.Size = new System.Drawing.Size(653, 497);
-            this.gboxEntityListView.TabIndex = 9;
-            this.gboxEntityListView.TabStop = false;
-            this.gboxEntityListView.Text = "Entities";
-            // 
-            // lblSelectedEntities
-            // 
-            this.lblSelectedEntities.Location = new System.Drawing.Point(442, 29);
-            this.lblSelectedEntities.Name = "lblSelectedEntities";
-            this.lblSelectedEntities.Size = new System.Drawing.Size(202, 449);
-            this.lblSelectedEntities.TabIndex = 11;
             // 
             // label1
             // 
@@ -188,19 +165,26 @@ namespace Maverick.Xrm.DependencyIdentifier
             this.label1.TabIndex = 12;
             this.label1.Text = "Selected Entities";
             // 
-            // btnGenerateDependencies
+            // lblSelectedEntities
             // 
-            this.btnGenerateDependencies.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnGenerateDependencies.Image = ((System.Drawing.Image)(resources.GetObject("btnGenerateDependencies.Image")));
-            this.btnGenerateDependencies.Location = new System.Drawing.Point(18, 633);
-            this.btnGenerateDependencies.Name = "btnGenerateDependencies";
-            this.btnGenerateDependencies.Size = new System.Drawing.Size(248, 50);
-            this.btnGenerateDependencies.TabIndex = 13;
-            this.btnGenerateDependencies.Text = "Generate Dependencies";
-            this.btnGenerateDependencies.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnGenerateDependencies.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnGenerateDependencies.UseVisualStyleBackColor = true;
-            this.btnGenerateDependencies.Click += new System.EventHandler(this.btnGenerateDependencies_Click);
+            this.lblSelectedEntities.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.lblSelectedEntities.Location = new System.Drawing.Point(442, 29);
+            this.lblSelectedEntities.Name = "lblSelectedEntities";
+            this.lblSelectedEntities.Size = new System.Drawing.Size(202, 515);
+            this.lblSelectedEntities.TabIndex = 11;
+            // 
+            // gboxEntityListView
+            // 
+            this.gboxEntityListView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.gboxEntityListView.Controls.Add(this.pnlEntityListViewControl);
+            this.gboxEntityListView.Location = new System.Drawing.Point(21, 120);
+            this.gboxEntityListView.Name = "gboxEntityListView";
+            this.gboxEntityListView.Size = new System.Drawing.Size(653, 566);
+            this.gboxEntityListView.TabIndex = 9;
+            this.gboxEntityListView.TabStop = false;
+            this.gboxEntityListView.Text = "Entities";
             // 
             // dataGridView1
             // 
@@ -210,20 +194,70 @@ namespace Maverick.Xrm.DependencyIdentifier
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Location = new System.Drawing.Point(680, 120);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(680, 494);
+            this.dataGridView1.Size = new System.Drawing.Size(680, 563);
             this.dataGridView1.TabIndex = 14;
+            // 
+            // tsbGenerateDependencies
+            // 
+            this.tsbGenerateDependencies.Enabled = false;
+            this.tsbGenerateDependencies.Image = ((System.Drawing.Image)(resources.GetObject("tsbGenerateDependencies.Image")));
+            this.tsbGenerateDependencies.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbGenerateDependencies.Name = "tsbGenerateDependencies";
+            this.tsbGenerateDependencies.Size = new System.Drawing.Size(159, 28);
+            this.tsbGenerateDependencies.Text = "Generate Dependencies";
+            this.tsbGenerateDependencies.Click += new System.EventHandler(this.tsbGenerateDependencies_Click);
+            // 
+            // tsbExportDropDown
+            // 
+            this.tsbExportDropDown.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsmiExportToCSV,
+            this.tsmiExportToExcel});
+            this.tsbExportDropDown.Enabled = false;
+            this.tsbExportDropDown.Image = ((System.Drawing.Image)(resources.GetObject("tsbExportDropDown.Image")));
+            this.tsbExportDropDown.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbExportDropDown.Name = "tsbExportDropDown";
+            this.tsbExportDropDown.Size = new System.Drawing.Size(78, 28);
+            this.tsbExportDropDown.Text = "Export";
+            // 
+            // tsmiExportToCSV
+            // 
+            this.tsmiExportToCSV.Image = ((System.Drawing.Image)(resources.GetObject("tsmiExportToCSV.Image")));
+            this.tsmiExportToCSV.Name = "tsmiExportToCSV";
+            this.tsmiExportToCSV.Size = new System.Drawing.Size(188, 30);
+            this.tsmiExportToCSV.Text = "CSV";
+            this.tsmiExportToCSV.Click += new System.EventHandler(this.tsmiExportToCSV_Click);
+            // 
+            // tsmiExportToExcel
+            // 
+            this.tsmiExportToExcel.Image = ((System.Drawing.Image)(resources.GetObject("tsmiExportToExcel.Image")));
+            this.tsmiExportToExcel.Name = "tsmiExportToExcel";
+            this.tsmiExportToExcel.Size = new System.Drawing.Size(188, 30);
+            this.tsmiExportToExcel.Text = "Excel";
+            this.tsmiExportToExcel.Click += new System.EventHandler(this.tsmiExportToExcel_Click);
+            // 
+            // dlvEntities
+            // 
+            this.dlvEntities.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.dlvEntities.DisplayType = Maverick.Xrm.DI.Helper.Enum.ListViewDisplayType.Entities;
+            this.dlvEntities.Entities = null;
+            this.dlvEntities.Location = new System.Drawing.Point(0, 0);
+            this.dlvEntities.Name = "dlvEntities";
+            this.dlvEntities.ShowSearchBox = true;
+            this.dlvEntities.Size = new System.Drawing.Size(436, 544);
+            this.dlvEntities.TabIndex = 0;
+            this.dlvEntities.CheckedItemsChanged += new System.EventHandler(this.dlvEntities_CheckedItemsChanged);
             // 
             // DependencyIdentifierControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.dataGridView1);
-            this.Controls.Add(this.btnGenerateDependencies);
             this.Controls.Add(this.gboxEntityListView);
             this.Controls.Add(this.gboxDependencyType);
             this.Controls.Add(this.toolStripMenu);
             this.Name = "DependencyIdentifierControl";
-            this.Size = new System.Drawing.Size(1363, 695);
+            this.Size = new System.Drawing.Size(1363, 689);
             this.OnCloseTool += new System.EventHandler(this.DependencyIdentifierControl_OnCloseTool);
             this.Load += new System.EventHandler(this.DependencyIdentifierControl_Load);
             this.toolStripMenu.ResumeLayout(false);
@@ -255,7 +289,10 @@ namespace Maverick.Xrm.DependencyIdentifier
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ToolStripButton tsbCloseTool;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.Button btnGenerateDependencies;
         private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.ToolStripButton tsbGenerateDependencies;
+        private System.Windows.Forms.ToolStripDropDownButton tsbExportDropDown;
+        private System.Windows.Forms.ToolStripMenuItem tsmiExportToCSV;
+        private System.Windows.Forms.ToolStripMenuItem tsmiExportToExcel;
     }
 }

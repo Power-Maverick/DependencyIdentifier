@@ -19,6 +19,7 @@ using System.Windows.Forms;
 using XrmToolBox.Extensibility;
 using Maverick.Xrm.DependencyIdentifier.Forms;
 using Enum = Maverick.Xrm.DI.Helper.Enum;
+using Maverick.XTB.DI.Helper;
 
 namespace Maverick.Xrm.DependencyIdentifier
 {
@@ -30,6 +31,8 @@ namespace Maverick.Xrm.DependencyIdentifier
 
         private Settings mySettings;
         private BackgroundWorker _mainPluginLocalWorker;
+        private List<DependencyReport> dependentComponents;
+        private Enum.UserOperations operations;
 
         #endregion
 
@@ -76,7 +79,7 @@ namespace Maverick.Xrm.DependencyIdentifier
                 Message = $"Generating dependency...",
                 Work = (worker, args) =>
                 {
-                    List<DependencyReport> dependentComponents = new List<DependencyReport>();
+                    dependentComponents = new List<DependencyReport>();
 
                     if (Service is CrmServiceClient svc)
                     {
@@ -124,7 +127,6 @@ namespace Maverick.Xrm.DependencyIdentifier
                                     response = (ExecuteMultipleResponse)threadLocalState.Service.Execute(threadLocalState.EMRequest);
                                     dependentComponents.AddRange(ProcessDependencies(threadLocalState.Service, dlvEntities.SelectedData, threadLocalState.EMRequest.Requests, response.Responses));
                                 }
-                                threadLocalState.Service.Dispose();
                             });
                     }
                     else
@@ -164,17 +166,35 @@ namespace Maverick.Xrm.DependencyIdentifier
             // Display the results returned in the responses.
             foreach (var responseItem in emrItems)
             {
-                var request = (RetrieveDependentComponentsRequest)requests[responseItem.RequestIndex];
-                var entityMetadata = selectedEntities
-                                        .Cast<EntityMetadata>()
-                                        .FirstOrDefault(e => e.MetadataId.Value == request.ObjectId);
-
-                // A valid response.
-                if (responseItem.Response != null)
+                if (radAllDependencies.Checked)
                 {
-                    EntityCollection dependencies = (EntityCollection)responseItem.Response.Results["EntityCollection"];
-                    var dc = DataverseHelper.ProcessDependencyList(svc, dependencies);
-                    dependentComponents.AddRange(SanitizeDependencyReportList(entityMetadata.SchemaName, dc));
+                    var request = (RetrieveDependentComponentsRequest)requests[responseItem.RequestIndex];
+                    var entityMetadata = selectedEntities
+                                            .Cast<EntityMetadata>()
+                                            .FirstOrDefault(e => e.MetadataId.Value == request.ObjectId);
+
+                    // A valid response.
+                    if (responseItem.Response != null)
+                    {
+                        EntityCollection dependencies = (EntityCollection)responseItem.Response.Results["EntityCollection"];
+                        var dc = DataverseHelper.ProcessDependencyList(svc, dependencies);
+                        dependentComponents.AddRange(SanitizeDependencyReportList(entityMetadata.SchemaName, dc));
+                    }
+                }
+                else if (radDependenciesForDelete.Checked)
+                {
+                    var request = (RetrieveDependenciesForDeleteRequest)requests[responseItem.RequestIndex];
+                    var entityMetadata = selectedEntities
+                                            .Cast<EntityMetadata>()
+                                            .FirstOrDefault(e => e.MetadataId.Value == request.ObjectId);
+
+                    // A valid response.
+                    if (responseItem.Response != null)
+                    {
+                        EntityCollection dependencies = (EntityCollection)responseItem.Response.Results["EntityCollection"];
+                        var dc = DataverseHelper.ProcessDependencyList(svc, dependencies);
+                        dependentComponents.AddRange(SanitizeDependencyReportList(entityMetadata.SchemaName, dc));
+                    }
                 }
             }
 
@@ -220,6 +240,24 @@ namespace Maverick.Xrm.DependencyIdentifier
         private void WhoAmI()
         {
             Service.Execute(new WhoAmIRequest());
+        }
+
+        private void ValidateButtonEnablement()
+        {
+            switch (operations)
+            {
+                case Enum.UserOperations.EntitiesLoaded:
+                    tsbGenerateDependencies.Enabled = true;
+                    break;
+                case Enum.UserOperations.DependenciesGenerated:
+                    tsbGenerateDependencies.Enabled = true;
+                    tsbExportDropDown.Enabled = true;
+                    break;
+                default:
+                    tsbGenerateDependencies.Enabled = false;
+                    tsbExportDropDown.Enabled = false;
+                    break;
+            }
         }
 
         #endregion
@@ -305,6 +343,8 @@ namespace Maverick.Xrm.DependencyIdentifier
         private void tsbLoadEntities_Click(object sender, EventArgs e)
         {
             LoadEntityMetadata();
+            operations = Enum.UserOperations.EntitiesLoaded;
+            ValidateButtonEnablement();
         }
 
         private void dlvEntities_CheckedItemsChanged(object sender, EventArgs e)
@@ -329,6 +369,62 @@ namespace Maverick.Xrm.DependencyIdentifier
             ExecuteDependencyIdentifier();
         }
 
+        private void tsmiExportToCSV_Click(object sender, EventArgs e)
+        {
+            if (dependentComponents != null)
+            {
+                Export.ExportAsCsv(dependentComponents);
+            }
+        }
+
+        private void tsmiExportToExcel_Click(object sender, EventArgs e)
+        {
+            var saveFileDialog = new SaveFileDialog();
+            var filter = "Excel file (*.xlsx)|*.xlsx| All Files (*.*)|*.*";
+            saveFileDialog.Filter = filter;
+            saveFileDialog.Title = @"Export as Excel";
+
+            if (saveFileDialog.ShowDialog() != DialogResult.OK) { return; }
+
+            WorkAsync(new WorkAsyncInfo
+            {
+                Message = $"Generating Microsoft Excel file...",
+                Work = (worker, args) =>
+                {
+                    Export.ExportAsExcel(dependentComponents, saveFileDialog.FileName);
+
+                    args.Result = dependentComponents;
+                },
+                PostWorkCallBack = (args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        MessageBox.Show(args.Error.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Log(args.Error.ToString(), Enum.LogLevel.Error);
+                    }
+                }
+            });
+        }
+
+        private void tsbGenerateDependencies_Click(object sender, EventArgs e)
+        {
+            dlvEntities.ClearSearchText();
+
+            if (dlvEntities.Entities.Count > 0)
+            {
+                ExecuteDependencyIdentifier();
+                operations = Enum.UserOperations.DependenciesGenerated;
+                ValidateButtonEnablement();
+            }
+            else
+            {
+                MessageBox.Show("Please select entities before generating the dependency report.", "Selection Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+        }
+
         #endregion
+
+
     }
 }

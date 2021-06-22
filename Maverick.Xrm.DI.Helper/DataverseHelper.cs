@@ -159,7 +159,7 @@ namespace Maverick.Xrm.DI.Helper
                     name = GetEntityMapName(componentId);
                     break;
                 case (int)Enum.ComponentType.SavedQuery:
-                    name = "SavedQuery - TBD";
+                    name = GetSavedQueryName(componentId);
                     break;
                 case (int)Enum.ComponentType.ModelDrivenApp:
                     name = GetModelDrivenAppName(componentId);
@@ -230,6 +230,14 @@ namespace Maverick.Xrm.DI.Helper
             Entity eForm = Service.Retrieve("systemform", id, new ColumnSet("name", "objecttypecode", "type"));
             OptionSetValue formType = (OptionSetValue)eForm["type"];
             string name = $"{eForm["name"]} ({ParseFormTypeName(formType.Value)})";
+
+            return name;
+        }
+
+        private static string GetSavedQueryName(Guid id)
+        {
+            Entity eSavedQuery = Service.Retrieve("savedquery", id, new ColumnSet("name", "returnedtypecode"));
+            string name = $"{eSavedQuery["name"]} ({eSavedQuery["returnedtypecode"]})";
 
             return name;
         }
