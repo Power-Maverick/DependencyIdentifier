@@ -232,7 +232,7 @@ namespace Maverick.Xrm.DI.Helper
         {
             string name = string.Empty;
             Entity eForm = Service.Retrieve("systemform", id, new ColumnSet("name", "objecttypecode", "type"));
-            if (eForm != null)
+            if (eForm != null && eForm.Contains("type") && eForm.Contains("name"))
             {
                 OptionSetValue formType = (OptionSetValue)eForm["type"];
                 name = $"{eForm["name"]} ({ParseFormTypeName(formType.Value)})";
@@ -245,7 +245,7 @@ namespace Maverick.Xrm.DI.Helper
         {
             string name = string.Empty;
             Entity eSavedQuery = Service.Retrieve("savedquery", id, new ColumnSet("name", "returnedtypecode"));
-            if (eSavedQuery != null)
+            if (eSavedQuery != null && eSavedQuery.Contains("name") && eSavedQuery.Contains("returnedtypecode"))
             {
                 name = $"{eSavedQuery["name"]} ({eSavedQuery["returnedtypecode"]})"; 
             }
@@ -257,7 +257,7 @@ namespace Maverick.Xrm.DI.Helper
         {
             string name = string.Empty;
             Entity eEntityMap = Service.Retrieve("entitymap", id, new ColumnSet("sourceentityname", "targetentityname"));
-            if (eEntityMap != null)
+            if (eEntityMap != null && eEntityMap.Contains("sourceentityname") && eEntityMap.Contains("targetentityname"))
             {
                 name = $"Source: {eEntityMap["sourceentityname"]} | Target: {eEntityMap["targetentityname"]}"; 
             }
@@ -269,7 +269,7 @@ namespace Maverick.Xrm.DI.Helper
         {
             string name = string.Empty;
             Entity eAppModule = Service.Retrieve("appmodule", id, new ColumnSet("name"));
-            if (eAppModule != null)
+            if (eAppModule != null && eAppModule.Contains("name"))
             {
                 name = $"{eAppModule["name"]}"; 
             }
@@ -281,7 +281,7 @@ namespace Maverick.Xrm.DI.Helper
         {
             string name = string.Empty;
             Entity eSitemap = Service.Retrieve("sitemap", id, new ColumnSet(true));
-            if (eSitemap != null)
+            if (eSitemap != null && eSitemap.Contains("sitemapname"))
             {
                 name = $"{eSitemap["sitemapname"]}"; 
             }
@@ -293,7 +293,7 @@ namespace Maverick.Xrm.DI.Helper
         {
             string name = string.Empty;
             Entity eMobileProfile = Service.Retrieve("mobileofflineprofile", id, new ColumnSet("name"));
-            if (eMobileProfile != null)
+            if (eMobileProfile != null && eMobileProfile.Contains("name"))
             {
                 name = $"{eMobileProfile["name"]}"; 
             }
@@ -305,7 +305,7 @@ namespace Maverick.Xrm.DI.Helper
         {
             string name = string.Empty;
             Entity eEmailTemplate = Service.Retrieve("template", id, new ColumnSet("title"));
-            if (eEmailTemplate != null)
+            if (eEmailTemplate != null && eEmailTemplate.Contains("title"))
             {
                 name = $"{eEmailTemplate["title"]}"; 
             }
@@ -317,7 +317,7 @@ namespace Maverick.Xrm.DI.Helper
         {
             string name = string.Empty;
             Entity eMailMerge = Service.Retrieve("mailmergetemplate", id, new ColumnSet("name"));
-            if (eMailMerge != null)
+            if (eMailMerge != null && eMailMerge.Contains("name"))
             {
                 name = $"{eMailMerge["name"]}"; 
             }
@@ -329,7 +329,7 @@ namespace Maverick.Xrm.DI.Helper
         {
             string name = string.Empty;
             Entity eReport = Service.Retrieve("report", id, new ColumnSet("name"));
-            if (eReport != null)
+            if (eReport != null && eReport.Contains("name"))
             {
                 name = $"{eReport["name"]}"; 
             }
@@ -341,7 +341,7 @@ namespace Maverick.Xrm.DI.Helper
         {
             string name = string.Empty;
             Entity eSdkMessage = Service.Retrieve("sdkmessageprocessingstep", id, new ColumnSet("name", "stage"));
-            if (eSdkMessage != null)
+            if (eSdkMessage != null && eSdkMessage.Contains("name"))
             {
                 OptionSetValue pluginStage = (OptionSetValue)eSdkMessage["stage"];
                 name = $"{eSdkMessage["name"]} ({ParseSdkMessageStepStage(pluginStage.Value)})"; 
