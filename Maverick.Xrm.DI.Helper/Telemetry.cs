@@ -44,6 +44,11 @@ namespace Maverick.Xrm.DI.Helper
             }
         }
 
+        public static void TrackPageView(string pageName)
+        {
+            _telemetry.TrackPageView(pageName);
+        }
+
         public static void TrackException(Exception ex)
         {
             if (ex != null && Enabled)

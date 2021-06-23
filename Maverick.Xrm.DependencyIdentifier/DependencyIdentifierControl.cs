@@ -293,6 +293,31 @@ namespace Maverick.Xrm.DependencyIdentifier
             }
         }
 
+        private void LogEvent(string eventName)
+        {
+            Telemetry.TrackEvent(eventName);
+        }
+
+        private void LogEventMetrics(string eventName, string metricName, double metric)
+        {
+            var metrics = new Dictionary<string, double>
+            {
+              { metricName, metric }
+            };
+
+            Telemetry.TrackEvent(eventName, null, metrics);
+        }
+
+        private void LogException(Exception ex)
+        {
+            Telemetry.TrackException(ex);
+        }
+
+        private void LogPageView(string pageName)
+        {
+            Telemetry.TrackPageView(pageName);
+        }
+
         #endregion
 
         #region Constructor
@@ -309,6 +334,7 @@ namespace Maverick.Xrm.DependencyIdentifier
         private void DependencyIdentifierControl_Load(object sender, EventArgs e)
         {
             //ShowInfoNotification("This is a notification that can lead to XrmToolBox repository", new Uri("https://github.com/MscrmTools/XrmToolBox"));
+            var start = DateTime.Now;
 
             // Loads or creates the settings for the plugin
             if (!SettingsManager.Instance.TryLoad(GetType(), out pluginSettings))
@@ -326,10 +352,15 @@ namespace Maverick.Xrm.DependencyIdentifier
             frmPrivatePreview.ShowDialog();
 
             EnsureServiceIsAvailable();
+            LogPageView("Main Plugin");
+            var stop = DateTime.Now;
+            var duration = stop - start;
+            LogEventMetrics("Load", "LoadTime", duration.TotalMilliseconds);
         }
 
         private void DependencyIdentifierControl_OnCloseTool(object sender, EventArgs e)
         {
+            LogEvent("Close");
             // Before leaving, save the settings
             SettingsManager.Instance.Save(GetType(), pluginSettings);
         }
@@ -349,9 +380,13 @@ namespace Maverick.Xrm.DependencyIdentifier
 
         private void tsbLoadEntities_Click(object sender, EventArgs e)
         {
+            var start = DateTime.Now;
             LoadEntityMetadata();
             operations = Enum.UserOperations.EntitiesLoaded;
             ValidateButtonEnablement();
+            var stop = DateTime.Now;
+            var duration = stop - start;
+            LogEventMetrics("Entities Load", "LoadTime", duration.TotalMilliseconds);
         }
 
         private void dlvEntities_CheckedItemsChanged(object sender, EventArgs e)
@@ -366,26 +401,25 @@ namespace Maverick.Xrm.DependencyIdentifier
 
         private void tsbCloseTool_Click(object sender, EventArgs e)
         {
-            Log("Close", Enum.LogLevel.Info);
+            LogEvent("Close");
             CloseTool();
-        }
-
-        private void btnGenerateDependencies_Click(object sender, EventArgs e)
-        {
-            dlvEntities.ClearSearchText();
-            ExecuteDependencyIdentifier();
         }
 
         private void tsmiExportToCSV_Click(object sender, EventArgs e)
         {
+            var start = DateTime.Now;
             if (dependentComponents != null)
             {
                 Export.ExportAsCsv(dependentComponents);
             }
+            var stop = DateTime.Now;
+            var duration = stop - start;
+            LogEventMetrics("Export CSV", "ExecutionTime", duration.TotalMilliseconds);
         }
 
         private void tsmiExportToExcel_Click(object sender, EventArgs e)
         {
+            var start = DateTime.Now;
             var saveFileDialog = new SaveFileDialog();
             var filter = "Excel file (*.xlsx)|*.xlsx| All Files (*.*)|*.*";
             saveFileDialog.Filter = filter;
@@ -411,10 +445,14 @@ namespace Maverick.Xrm.DependencyIdentifier
                     }
                 }
             });
+            var stop = DateTime.Now;
+            var duration = stop - start;
+            LogEventMetrics("Export Excel", "ExecutionTime", duration.TotalMilliseconds);
         }
 
         private void tsbGenerateDependencies_Click(object sender, EventArgs e)
         {
+            var start = DateTime.Now;
             dlvEntities.ClearSearchText();
 
             if (dlvEntities.Entities.Count > 0)
@@ -427,7 +465,16 @@ namespace Maverick.Xrm.DependencyIdentifier
             {
                 MessageBox.Show("Please select entities before generating the dependency report.", "Selection Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
+            var stop = DateTime.Now;
+            var duration = stop - start;
+            if (radAllDependencies.Checked)
+            {
+                LogEventMetrics("Generate All Dependencies", "ExecutionTime", duration.TotalMilliseconds);
+            }
+            else if (radDependenciesForDelete.Checked)
+            {
+                LogEventMetrics("Generate Dependencies for Delete", "ExecutionTime", duration.TotalMilliseconds);
+            }
         }
 
         #endregion
