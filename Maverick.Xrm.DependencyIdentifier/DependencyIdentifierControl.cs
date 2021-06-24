@@ -233,11 +233,10 @@ namespace Maverick.Xrm.DependencyIdentifier
 
         private void ColumnResize()
         {
-            dataGridView1.Columns[0].Width = 150; // Entity Schema
-            dataGridView1.Columns[1].Width = 300; // Dependent Component
-            dataGridView1.Columns[2].Width = 200; // Dependent Component Type
-            dataGridView1.Columns[3].Width = 200; // Required Component
-            dataGridView1.Columns[4].Width = 200; // Required Component Type
+            dataGridView1.Columns[0].Width = 125; // Entity Schema
+            dataGridView1.Columns[1].Width = 250; // Dependent Component
+            dataGridView1.Columns[2].Width = 150; // Dependent Component Type
+            dataGridView1.Columns[3].Width = 400; // Dependent Description
         }
 
         private void EnsureServiceIsAvailable()

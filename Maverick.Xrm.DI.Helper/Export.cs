@@ -13,7 +13,7 @@ namespace Maverick.XTB.DI.Helper
     {
         #region Private
 
-        private static List<string> ColumnHeaders = new List<string> { "Entity Schema Name", "Dependent Component", "Dependent Component Type", "Required Component", "Required Component Type" };
+        private static List<string> ColumnHeaders = new List<string> { "\"Entity Schema Name\"", "\"Dependent Component\"", "\"Dependent Component Type\"", "\"Required Component\"", "\"Required Component Type\"" };
 
         private static void FormatAsTable(Range sourceRange, string tableName, string tableStyleName)
         {
@@ -38,12 +38,12 @@ namespace Maverick.XTB.DI.Helper
             var fileName = saveFileDialog.FileName;
             var writer = new StreamWriter(fileName);
 
-            var header = string.Join(";", ColumnHeaders);
+            var header = string.Join(",", ColumnHeaders);
             writer.WriteLine(header);
 
             foreach (var row in rows.Where(r => r.SkipAdding == false))
             {
-                writer.WriteLine($"{row.EntitySchemaName};{row.DependentComponentName};{row.DependentComponentType};{row.RequiredComponentName};{row.RequiredComponentType}");
+                writer.WriteLine($"\"{row.EntitySchemaName}\",\"{row.DependentComponentName}\",\"{row.DependentComponentType}\",\"{row.RequiredComponentName}\",\"{row.RequiredComponentType}\"");
             }
 
             writer.Close();

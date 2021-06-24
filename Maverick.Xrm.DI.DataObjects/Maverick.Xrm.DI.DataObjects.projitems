@@ -9,6 +9,7 @@
     <Import_RootNamespace>Maverick.XTB.DI.DataObjects</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ComponentInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DependencyReport.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ListViewColumnDefinition.cs" />
   </ItemGroup>
