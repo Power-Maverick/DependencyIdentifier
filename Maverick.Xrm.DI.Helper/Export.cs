@@ -13,7 +13,7 @@ namespace Maverick.XTB.DI.Helper
     {
         #region Private
 
-        private static List<string> ColumnHeaders = new List<string> { "\"Entity Schema Name\"", "\"Dependent Component\"", "\"Dependent Component Type\"", "\"Required Component\"", "\"Required Component Type\"" };
+        private static List<string> ColumnHeaders = new List<string> { "\"Entity Schema Name\"", "\"Dependent Component\"", "\"Dependent Component Type\"", "\"DependentDescription\"" };
 
         private static void FormatAsTable(Range sourceRange, string tableName, string tableStyleName)
         {
@@ -43,7 +43,7 @@ namespace Maverick.XTB.DI.Helper
 
             foreach (var row in rows.Where(r => r.SkipAdding == false))
             {
-                writer.WriteLine($"\"{row.EntitySchemaName}\",\"{row.DependentComponentName}\",\"{row.DependentComponentType}\",\"{row.RequiredComponentName}\",\"{row.RequiredComponentType}\"");
+                writer.WriteLine($"\"{row.EntitySchemaName}\",\"{row.DependentComponentName}\",\"{row.DependentComponentType}\",\"{row.DependentDescription}\"");
             }
 
             writer.Close();
@@ -69,8 +69,7 @@ namespace Maverick.XTB.DI.Helper
                 worksheet.Cells[index + 2, "A"].Value2 = row.EntitySchemaName;
                 worksheet.Cells[index + 2, "B"].Value2 = row.DependentComponentName;
                 worksheet.Cells[index + 2, "C"].Value2 = row.DependentComponentType;
-                worksheet.Cells[index + 2, "D"].Value2 = row.RequiredComponentName;
-                worksheet.Cells[index + 2, "E"].Value2 = row.RequiredComponentType;
+                worksheet.Cells[index + 2, "D"].Value2 = row.DependentDescription;
             }
 
             var range = worksheet.Range["A1", $"E{rows.Count + 1}"];
