@@ -63,7 +63,7 @@ namespace Maverick.Xrm.DI.Helper
             [Display("Forms")]
             SystemForm = 60,
 
-            [Display("Attributes")]
+            [Display("Field")]
             Attribute = 2,
 
             [Display("Views")]
@@ -75,7 +75,7 @@ namespace Maverick.Xrm.DI.Helper
             [Display("Entity Relationship")]
             EntityRelationship = 10,
 
-            [Display("Plugin Step")]
+            [Display("SDK Message Processing Step")]
             SDKMessageProcessingStep = 92,
 
             [Display("Entity Map")]
@@ -99,6 +99,12 @@ namespace Maverick.Xrm.DI.Helper
             [Display("Report")]
             Report = 31,
 
+            [Display("Canvas App")]
+            CanvasApp = 300,
+
+            [Display("Process")]
+            Workflow = 29,
+
             /*// List of attributes not supported as of now
 
             Relationship = 3,
@@ -120,7 +126,7 @@ namespace Maverick.Xrm.DI.Helper
             Form = 24,
             Organization = 25,
 
-            Workflow = 29,
+            
             
             ReportEntity = 32,
             ReportCategory = 33,
@@ -175,7 +181,7 @@ namespace Maverick.Xrm.DI.Helper
             SdkMessageResponseField = 207,
             Import Map = 208,
             WebWizard = 210,
-            Canvas App = 300,
+            
             Connector = 371,
             */
         }

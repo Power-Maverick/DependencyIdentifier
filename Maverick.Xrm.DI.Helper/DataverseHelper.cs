@@ -104,8 +104,14 @@ namespace Maverick.Xrm.DI.Helper
         {
             DependencyReport dependencyReport = new DependencyReport();
 
-            var lstComponentTypes = System.Enum.GetValues(typeof(Enum.ComponentType)).Cast<Enum.ComponentType>().ToList();
-            foreach (var ct in lstComponentTypes)
+            var lstComponentTypes = System.Enum.GetValues(typeof(Enum.ComponentType)).Cast<Enum.ComponentType>()
+                                    .ToList()
+                                    .Select(ct => new
+                                    {
+                                        DisplayValue = ct.GetAttribute<DI.CustomAttributes.DisplayAttribute>().Name,
+                                        Component = (int)ct
+                                    });
+            /*foreach (var ct in lstComponentTypes)
             {
                 var text = ct.GetAttribute<DI.CustomAttributes.DisplayAttribute>();
 
@@ -117,13 +123,29 @@ namespace Maverick.Xrm.DI.Helper
                 {
                     dependencyReport.RequiredComponentType = text.Name;
                 }
-            }
+            }*/
+
+            var dependentOptionSet = ((OptionSetValue)dependency["dependentcomponenttype"]).Value;
+            var requiredOptionSet = ((OptionSetValue)dependency["requiredcomponenttype"]).Value;
+
+            var dependentType = lstComponentTypes.FirstOrDefault(dct => dependentOptionSet == dct.Component);
+            var requiredType = lstComponentTypes.FirstOrDefault(dct => requiredOptionSet == dct.Component);
+
+            dependencyReport.DependentComponentType = dependentType?.DisplayValue;
+            dependencyReport.RequiredComponentType = requiredType?.DisplayValue;
 
             ComponentInfo dependentCI = GetComponentName(((OptionSetValue)dependency["dependentcomponenttype"]).Value, (Guid)dependency["dependentcomponentobjectid"]);
-            if (dependentCI != null)
+            if (dependentCI != null 
+                && !string.IsNullOrEmpty(dependencyReport.DependentComponentType)
+                && !string.IsNullOrEmpty(dependencyReport.RequiredComponentType))
             {
                 dependencyReport.DependentComponentName = dependentCI.Name;
                 dependencyReport.DependentDescription = dependentCI.Description;
+
+                if (dependentCI.IsDashboard)
+                {
+                    dependencyReport.DependentComponentType = "Dashboard";
+                }
             }
             else
             {
@@ -134,10 +156,8 @@ namespace Maverick.Xrm.DI.Helper
             dependencyReport.RequiredComponentName = requiredCI.Name;
 
             // Disabled for testing
-            if (!dependencyReport.SkipAdding 
-                && (string.IsNullOrEmpty(dependencyReport.DependentComponentType)
-                || string.IsNullOrEmpty(dependencyReport.RequiredComponentType)
-                || string.IsNullOrEmpty(dependencyReport.DependentComponentName)
+            if (!dependencyReport.SkipAdding
+                && (string.IsNullOrEmpty(dependencyReport.DependentComponentName)
                 || string.IsNullOrEmpty(dependencyReport.RequiredComponentName)))
             {
                 dependencyReport.SkipAdding = true;
@@ -162,40 +182,43 @@ namespace Maverick.Xrm.DI.Helper
                     info = GetAttributeInformation(componentId);
                     break;
                 case (int)Enum.ComponentType.OptionSet:
-                    info = GetGlobalOptionSetName(componentId);
+                    info = GetGlobalOptionSet(componentId);
                     break;
                 case (int)Enum.ComponentType.SystemForm:
-                    info = GetFormDisplayName(componentId);
+                    info = GetFormDisplay(componentId);
                     break;
                 case (int)Enum.ComponentType.EntityRelationship:
-                    info = GetEntityRelationshipName(componentId);
+                    info = GetEntityRelationship(componentId);
                     break;
                 case (int)Enum.ComponentType.SDKMessageProcessingStep:
-                    info = GetSdkMessageProcessingStepName(componentId);
+                    info = GetSdkMessageProcessingStep(componentId);
                     break;
                 case (int)Enum.ComponentType.EntityMap:
-                    info = GetEntityMapName(componentId);
+                    info = GetEntityMap(componentId);
                     break;
                 case (int)Enum.ComponentType.SavedQuery:
-                    info = GetSavedQueryName(componentId);
+                    info = GetSavedQuery(componentId);
                     break;
                 case (int)Enum.ComponentType.ModelDrivenApp:
-                    info = GetModelDrivenAppName(componentId);
+                    info = GetModelDrivenApp(componentId);
                     break;
                 case (int)Enum.ComponentType.SiteMap:
-                    info = GetSitemapName(componentId);
+                    info = GetSitemap(componentId);
                     break;
                 case (int)Enum.ComponentType.MobileOfflineProfile:
-                    info = GetMobileProfileName(componentId);
+                    info = GetMobileProfile(componentId);
                     break;
                 case (int)Enum.ComponentType.EmailTemplate:
-                    info = GetEmailTemplateName(componentId);
+                    info = GetEmailTemplate(componentId);
                     break;
                 case (int)Enum.ComponentType.MailMergeTemplate:
-                    info = GetMailMergeTemplateName(componentId);
+                    info = GetMailMergeTemplate(componentId);
                     break;
                 case (int)Enum.ComponentType.Report:
-                    info = GetReportName(componentId);
+                    info = GetReport(componentId);
+                    break;
+                case (int)Enum.ComponentType.CanvasApp:
+                    info = GetCanvasApp(componentId);
                     break;
                 default:
                     //name = $"{componentType} - Not Implemented";
@@ -231,7 +254,7 @@ namespace Maverick.Xrm.DI.Helper
             return info;
         }
 
-        private static ComponentInfo GetGlobalOptionSetName(Guid id)
+        private static ComponentInfo GetGlobalOptionSet(Guid id)
         {
             ComponentInfo info = new ComponentInfo();
             RetrieveOptionSetRequest req = new RetrieveOptionSetRequest
@@ -246,7 +269,7 @@ namespace Maverick.Xrm.DI.Helper
             return info;
         }
 
-        private static ComponentInfo GetFormDisplayName(Guid id)
+        private static ComponentInfo GetFormDisplay(Guid id)
         {
             ComponentInfo info = new ComponentInfo();
             Entity eForm = Service.Retrieve("systemform", id, new ColumnSet("name", "objecttypecode", "type", "formactivationstate"));
@@ -256,10 +279,15 @@ namespace Maverick.Xrm.DI.Helper
                 info.Description = $"Entity: {eForm["objecttypecode"]}, Type: {eForm.FormattedValues["type"]}, Status: {eForm.FormattedValues["formactivationstate"]}";
             }
 
+            if (eForm.FormattedValues["type"] == "Dashboard")
+            {
+                info.IsDashboard = true;
+            }
+
             return info;
         }
 
-        private static ComponentInfo GetSavedQueryName(Guid id)
+        private static ComponentInfo GetSavedQuery(Guid id)
         {
             ComponentInfo info = new ComponentInfo();
             Entity eSavedQuery = Service.Retrieve("savedquery", id, new ColumnSet("name", "returnedtypecode", "statuscode", "isdefault"));
@@ -272,7 +300,7 @@ namespace Maverick.Xrm.DI.Helper
             return info;
         }
 
-        private static ComponentInfo GetEntityMapName(Guid id)
+        private static ComponentInfo GetEntityMap(Guid id)
         {
             ComponentInfo info = new ComponentInfo();
             Entity eEntityMap = Service.Retrieve("entitymap", id, new ColumnSet("sourceentityname", "targetentityname"));
@@ -284,7 +312,7 @@ namespace Maverick.Xrm.DI.Helper
             return info;
         }
 
-        private static ComponentInfo GetModelDrivenAppName(Guid id)
+        private static ComponentInfo GetModelDrivenApp(Guid id)
         {
             ComponentInfo info = new ComponentInfo();
             Entity eAppModule = Service.Retrieve("appmodule", id, new ColumnSet("name", "uniquename", "statuscode"));
@@ -297,7 +325,20 @@ namespace Maverick.Xrm.DI.Helper
             return info;
         }
 
-        private static ComponentInfo GetSitemapName(Guid id)
+        private static ComponentInfo GetCanvasApp(Guid id)
+        {
+            ComponentInfo info = new ComponentInfo();
+            Entity eCanvasApp = Service.Retrieve("canvasapp", id, new ColumnSet("name", "displayname"));
+            if (eCanvasApp != null && eCanvasApp.Contains("name"))
+            {
+                info.Name = $"{eCanvasApp["displayname"]}";
+                info.Description = $"Unique Name: {eCanvasApp["name"]}";
+            }
+
+            return info;
+        }
+
+        private static ComponentInfo GetSitemap(Guid id)
         {
             ComponentInfo info = new ComponentInfo();
             Entity eSitemap = Service.Retrieve("sitemap", id, new ColumnSet(true));
@@ -309,7 +350,7 @@ namespace Maverick.Xrm.DI.Helper
             return info;
         }
 
-        private static ComponentInfo GetMobileProfileName(Guid id)
+        private static ComponentInfo GetMobileProfile(Guid id)
         {
             ComponentInfo info = new ComponentInfo();
             Entity eMobileProfile = Service.Retrieve("mobileofflineprofile", id, new ColumnSet("name"));
@@ -321,7 +362,7 @@ namespace Maverick.Xrm.DI.Helper
             return info;
         }
 
-        private static ComponentInfo GetEmailTemplateName(Guid id)
+        private static ComponentInfo GetEmailTemplate(Guid id)
         {
             ComponentInfo info = new ComponentInfo();
             Entity eEmailTemplate = Service.Retrieve("template", id, new ColumnSet("title", "templatetypecode", "languagecode"));
@@ -334,7 +375,7 @@ namespace Maverick.Xrm.DI.Helper
             return info;
         }
 
-        private static ComponentInfo GetMailMergeTemplateName(Guid id)
+        private static ComponentInfo GetMailMergeTemplate(Guid id)
         {
             ComponentInfo info = new ComponentInfo();
             Entity eMailMerge = Service.Retrieve("mailmergetemplate", id, new ColumnSet("name", "languagecode", "templatetypecode"));
@@ -347,7 +388,7 @@ namespace Maverick.Xrm.DI.Helper
             return info;
         }
 
-        private static ComponentInfo GetReportName(Guid id)
+        private static ComponentInfo GetReport(Guid id)
         {
             ComponentInfo info = new ComponentInfo();
             Entity eReport = Service.Retrieve("report", id, new ColumnSet("name", "languagecode", "reporttypecode"));
@@ -361,7 +402,7 @@ namespace Maverick.Xrm.DI.Helper
             return info;
         }
 
-        private static ComponentInfo GetSdkMessageProcessingStepName(Guid id)
+        private static ComponentInfo GetSdkMessageProcessingStep(Guid id)
         {
             ComponentInfo info = new ComponentInfo();
             Entity eSdkMessage = Service.Retrieve("sdkmessageprocessingstep", id, new ColumnSet("name", "stage", "sdkmessageid", "statuscode"));
@@ -374,7 +415,20 @@ namespace Maverick.Xrm.DI.Helper
             return info;
         }
 
-        private static ComponentInfo GetEntityRelationshipName(Guid id)
+        private static ComponentInfo GetWorkflow(Guid id)
+        {
+            ComponentInfo info = new ComponentInfo();
+            Entity eWorkflow = Service.Retrieve("workflow", id, new ColumnSet("name", "primaryentity", "statuscode", "scope"));
+            if (eWorkflow != null && eWorkflow.Contains("name"))
+            {
+                info.Name = $"{eWorkflow["name"]}";
+                info.Description = $"Entity: {eWorkflow.FormattedValues["primaryentity"]}, Status: {eWorkflow.FormattedValues["statuscode"]}, Scope: {eWorkflow.FormattedValues["scope"]}";
+            }
+
+            return info;
+        }
+
+        private static ComponentInfo GetEntityRelationship(Guid id)
         {
             ComponentInfo info = new ComponentInfo();
             RetrieveRelationshipRequest req = new RetrieveRelationshipRequest

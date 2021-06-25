@@ -56,11 +56,11 @@ namespace Maverick.XTB.DI.Helper
             Worksheet worksheet = workbook.Sheets.Add();
             worksheet.Name = "Dependencies";
 
-            worksheet.Cells[1, 1].Value2 = ColumnHeaders[0];
-            worksheet.Cells[1, 2].Value2 = ColumnHeaders[1];
-            worksheet.Cells[1, 3].Value2 = ColumnHeaders[2];
-            worksheet.Cells[1, 4].Value2 = ColumnHeaders[3];
-            worksheet.Cells[1, 5].Value2 = ColumnHeaders[4];
+            worksheet.Cells[1, 1].Value2 = ColumnHeaders[0].Replace("\"","");
+            worksheet.Cells[1, 2].Value2 = ColumnHeaders[1].Replace("\"", "");
+            worksheet.Cells[1, 3].Value2 = ColumnHeaders[2].Replace("\"", "");
+            worksheet.Cells[1, 4].Value2 = ColumnHeaders[3].Replace("\"", "");
+            worksheet.Cells[1, 5].Value2 = ColumnHeaders[4].Replace("\"", "");
 
             for (var index = 0; index < rows.Count; index++)
             {

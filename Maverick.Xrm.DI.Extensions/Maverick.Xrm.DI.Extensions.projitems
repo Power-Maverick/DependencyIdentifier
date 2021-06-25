@@ -10,5 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)EnumExtension.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SortableBindingListExtension.cs" />
   </ItemGroup>
 </Project>

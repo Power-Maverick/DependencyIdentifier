@@ -21,6 +21,7 @@ using Maverick.Xrm.DependencyIdentifier.Forms;
 using Enum = Maverick.Xrm.DI.Helper.Enum;
 using Maverick.XTB.DI.Helper;
 using XrmToolBox.Extensibility.Interfaces;
+using Maverick.XTB.DI.Extensions;
 
 namespace Maverick.Xrm.DependencyIdentifier
 {
@@ -79,7 +80,7 @@ namespace Maverick.Xrm.DependencyIdentifier
 
         private void ExecuteDependencyIdentifier()
         {
-            dataGridView1.DataSource = null;
+            dgvDependencyReport.DataSource = null;
             ExecuteMultipleResponse response = new ExecuteMultipleResponse();
 
             WorkAsync(new WorkAsyncInfo
@@ -149,7 +150,7 @@ namespace Maverick.Xrm.DependencyIdentifier
                         });
                     }
 
-                    args.Result = dependentComponents;
+                    args.Result = dependentComponents.ToSortableBindingList();
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -160,8 +161,9 @@ namespace Maverick.Xrm.DependencyIdentifier
                     }
                     else
                     {
-                        dataGridView1.DataSource = args.Result;
+                        dgvDependencyReport.DataSource = (BindingList<DependencyReport>)args.Result;
                         ColumnResize();
+                        EnableColumnSorting();
                     }
                 }
             });
@@ -233,10 +235,19 @@ namespace Maverick.Xrm.DependencyIdentifier
 
         private void ColumnResize()
         {
-            dataGridView1.Columns[0].Width = 125; // Entity Schema
-            dataGridView1.Columns[1].Width = 250; // Dependent Component
-            dataGridView1.Columns[2].Width = 150; // Dependent Component Type
-            dataGridView1.Columns[3].Width = 400; // Dependent Description
+            dgvDependencyReport.Columns[0].Width = 125; // Entity Schema
+            dgvDependencyReport.Columns[1].Width = 250; // Dependent Component
+            dgvDependencyReport.Columns[2].Width = 150; // Dependent Component Type
+            dgvDependencyReport.Columns[3].Width = 400; // Dependent Description
+        }
+
+        private void EnableColumnSorting()
+        {
+            foreach (DataGridViewColumn column in dgvDependencyReport.Columns)
+            {
+
+                column.SortMode = DataGridViewColumnSortMode.Automatic;
+            }
         }
 
         private void EnsureServiceIsAvailable()
