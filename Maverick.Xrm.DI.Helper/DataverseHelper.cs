@@ -220,6 +220,12 @@ namespace Maverick.Xrm.DI.Helper
                 case (int)Enum.ComponentType.CanvasApp:
                     info = GetCanvasApp(componentId);
                     break;
+                case (int)Enum.ComponentType.Workflow:
+                    info = GetWorkflow(componentId);
+                    break;
+                case (int)Enum.ComponentType.FieldSecurityProfile:
+                    info = GetFieldSecurityProfile(componentId);
+                    break;
                 default:
                     //name = $"{componentType} - Not Implemented";
                     break;
@@ -423,6 +429,18 @@ namespace Maverick.Xrm.DI.Helper
             {
                 info.Name = $"{eWorkflow["name"]}";
                 info.Description = $"Entity: {eWorkflow.FormattedValues["primaryentity"]}, Status: {eWorkflow.FormattedValues["statuscode"]}, Scope: {eWorkflow.FormattedValues["scope"]}";
+            }
+
+            return info;
+        }
+
+        private static ComponentInfo GetFieldSecurityProfile(Guid id)
+        {
+            ComponentInfo info = new ComponentInfo();
+            Entity eFLS = Service.Retrieve("fieldsecurityprofile", id, new ColumnSet("name"));
+            if (eFLS != null && eFLS.Contains("name"))
+            {
+                info.Name = $"{eFLS["name"]}";
             }
 
             return info;

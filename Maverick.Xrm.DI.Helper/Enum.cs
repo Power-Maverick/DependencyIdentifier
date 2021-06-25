@@ -105,6 +105,9 @@ namespace Maverick.Xrm.DI.Helper
             [Display("Process")]
             Workflow = 29,
 
+            [Display("Field Security Profile")]
+            FieldSecurityProfile = 70,
+
             /*// List of attributes not supported as of now
 
             Relationship = 3,
@@ -153,7 +156,7 @@ namespace Maverick.Xrm.DI.Helper
             HierarchyRule = 65,
             CustomControl = 66,
             CustomControlDefaultConfig = 68,
-            FieldSecurityProfile = 70,
+            
             FieldPermission = 71,
             
             PluginType = 90,
