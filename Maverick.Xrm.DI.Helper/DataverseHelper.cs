@@ -1,6 +1,7 @@
 ﻿using Maverick.Xrm.DI.DataObjects;
 using Maverick.Xrm.DI.Extensions;
 using Maverick.XTB.DI.DataObjects;
+using Maverick.XTB.DI.Extensions;
 using Microsoft.Crm.Sdk.Messages;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Messages;
@@ -282,7 +283,7 @@ namespace Maverick.Xrm.DI.Helper
             if (eForm != null && eForm.Contains("type") && eForm.Contains("name"))
             {
                 info.Name = $"{eForm["name"]}";
-                info.Description = $"Entity: {eForm["objecttypecode"]}, Type: {eForm.FormattedValues["type"]}, Status: {eForm.FormattedValues["formactivationstate"]}";
+                info.Description = $"Entity: {eForm["objecttypecode"]}, Type: {eForm.GetFormattedValue("type")}, Status: {eForm.GetFormattedValue("formactivationstate")}";
             }
 
             if (eForm.FormattedValues["type"] == "Dashboard")
@@ -300,7 +301,7 @@ namespace Maverick.Xrm.DI.Helper
             if (eSavedQuery != null && eSavedQuery.Contains("name") && eSavedQuery.Contains("returnedtypecode"))
             {
                 info.Name = $"{eSavedQuery["name"]}";
-                info.Description = $"Entity: {eSavedQuery["returnedtypecode"]}, Status: {eSavedQuery.FormattedValues["statuscode"]}, Is Default: {eSavedQuery["isdefault"]}";
+                info.Description = $"Entity: {eSavedQuery["returnedtypecode"]}, Status: {eSavedQuery.GetFormattedValue("statuscode")}, Is Default: {eSavedQuery["isdefault"]}";
             }
 
             return info;
@@ -325,7 +326,7 @@ namespace Maverick.Xrm.DI.Helper
             if (eAppModule != null && eAppModule.Contains("name"))
             {
                 info.Name = $"{eAppModule["name"]}";
-                info.Description = $"Unique Name: {eAppModule["uniquename"]}, Status: {eAppModule.FormattedValues["statuscode"]}";
+                info.Description = $"Unique Name: {eAppModule["uniquename"]}, Status: {eAppModule.GetFormattedValue("statuscode")}";
             }
 
             return info;
@@ -401,7 +402,7 @@ namespace Maverick.Xrm.DI.Helper
             if (eReport != null && eReport.Contains("name"))
             {
                 info.Name = $"{eReport["name"]}";
-                info.Description = $"Type: {eReport.FormattedValues["reporttypecode"]}, Language: {eReport["languagecode"]}";
+                info.Description = $"Type: {eReport.GetFormattedValue("reporttypecode")}, Language: {eReport["languagecode"]}";
 
             }
 
@@ -415,7 +416,7 @@ namespace Maverick.Xrm.DI.Helper
             if (eSdkMessage != null && eSdkMessage.Contains("name"))
             {
                 info.Name = $"{eSdkMessage["name"]}";
-                info.Description = $"Stage: {eSdkMessage.FormattedValues["stage"]}, SDK Message: {eSdkMessage.FormattedValues["sdkmessageid"]}";
+                info.Description = $"Stage: {eSdkMessage.GetFormattedValue("stage")}, SDK Message: {eSdkMessage.GetFormattedValue("sdkmessageid")}";
             }
 
             return info;
@@ -424,11 +425,11 @@ namespace Maverick.Xrm.DI.Helper
         private static ComponentInfo GetWorkflow(Guid id)
         {
             ComponentInfo info = new ComponentInfo();
-            Entity eWorkflow = Service.Retrieve("workflow", id, new ColumnSet("name", "primaryentity", "statuscode", "scope"));
+            Entity eWorkflow = Service.Retrieve("workflow", id, new ColumnSet("name", "category", "primaryentity", "statuscode", "scope"));
             if (eWorkflow != null && eWorkflow.Contains("name"))
             {
                 info.Name = $"{eWorkflow["name"]}";
-                info.Description = $"Entity: {eWorkflow.FormattedValues["primaryentity"]}, Status: {eWorkflow.FormattedValues["statuscode"]}, Scope: {eWorkflow.FormattedValues["scope"]}";
+                info.Description = $"Type: {eWorkflow.GetFormattedValue("category")}, Entity: {eWorkflow.GetFormattedValue("primaryentity")}, Status: {eWorkflow.GetFormattedValue("statuscode")}";
             }
 
             return info;

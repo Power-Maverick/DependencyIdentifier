@@ -9,6 +9,7 @@
     <Import_RootNamespace>Maverick.XTB.DI.Extensions</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)EntityExtension.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EnumExtension.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SortableBindingListExtension.cs" />
   </ItemGroup>
