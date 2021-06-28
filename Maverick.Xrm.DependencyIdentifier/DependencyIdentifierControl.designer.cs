@@ -44,11 +44,11 @@ namespace Maverick.Xrm.DependencyIdentifier
             this.radDependenciesForDelete = new System.Windows.Forms.RadioButton();
             this.radAllDependencies = new System.Windows.Forms.RadioButton();
             this.pnlEntityListViewControl = new System.Windows.Forms.Panel();
-            this.dlvEntities = new Maverick.Xrm.DependencyIdentifier.UserControls.DataListView();
             this.label1 = new System.Windows.Forms.Label();
             this.lblSelectedEntities = new System.Windows.Forms.Label();
             this.gboxEntityListView = new System.Windows.Forms.GroupBox();
             this.dgvDependencyReport = new System.Windows.Forms.DataGridView();
+            this.dlvEntities = new Maverick.Xrm.DependencyIdentifier.UserControls.DataListView();
             this.toolStripMenu.SuspendLayout();
             this.gboxDependencyType.SuspendLayout();
             this.pnlDependencyType.SuspendLayout();
@@ -194,19 +194,6 @@ namespace Maverick.Xrm.DependencyIdentifier
             this.pnlEntityListViewControl.Size = new System.Drawing.Size(647, 547);
             this.pnlEntityListViewControl.TabIndex = 8;
             // 
-            // dlvEntities
-            // 
-            this.dlvEntities.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.dlvEntities.DisplayType = Maverick.Xrm.DI.Helper.Enum.ListViewDisplayType.Entities;
-            this.dlvEntities.Entities = null;
-            this.dlvEntities.Location = new System.Drawing.Point(0, 0);
-            this.dlvEntities.Name = "dlvEntities";
-            this.dlvEntities.ShowSearchBox = true;
-            this.dlvEntities.Size = new System.Drawing.Size(436, 544);
-            this.dlvEntities.TabIndex = 0;
-            this.dlvEntities.CheckedItemsChanged += new System.EventHandler(this.dlvEntities_CheckedItemsChanged);
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -239,14 +226,32 @@ namespace Maverick.Xrm.DependencyIdentifier
             // 
             // dgvDependencyReport
             // 
+            this.dgvDependencyReport.AllowUserToAddRows = false;
+            this.dgvDependencyReport.AllowUserToDeleteRows = false;
+            this.dgvDependencyReport.AllowUserToOrderColumns = true;
             this.dgvDependencyReport.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvDependencyReport.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvDependencyReport.Location = new System.Drawing.Point(680, 120);
             this.dgvDependencyReport.Name = "dgvDependencyReport";
+            this.dgvDependencyReport.ReadOnly = true;
+            this.dgvDependencyReport.ShowEditingIcon = false;
             this.dgvDependencyReport.Size = new System.Drawing.Size(680, 563);
             this.dgvDependencyReport.TabIndex = 14;
+            // 
+            // dlvEntities
+            // 
+            this.dlvEntities.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.dlvEntities.DisplayType = Maverick.Xrm.DI.Helper.Enum.ListViewDisplayType.Entities;
+            this.dlvEntities.Entities = null;
+            this.dlvEntities.Location = new System.Drawing.Point(0, 0);
+            this.dlvEntities.Name = "dlvEntities";
+            this.dlvEntities.ShowSearchBox = true;
+            this.dlvEntities.Size = new System.Drawing.Size(436, 544);
+            this.dlvEntities.TabIndex = 0;
+            this.dlvEntities.CheckedItemsChanged += new System.EventHandler(this.dlvEntities_CheckedItemsChanged);
             // 
             // DependencyIdentifierControl
             // 

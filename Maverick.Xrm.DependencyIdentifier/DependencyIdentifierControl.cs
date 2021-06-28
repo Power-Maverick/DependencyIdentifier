@@ -22,20 +22,22 @@ using Enum = Maverick.Xrm.DI.Helper.Enum;
 using Maverick.XTB.DI.Helper;
 using XrmToolBox.Extensibility.Interfaces;
 using Maverick.XTB.DI.Extensions;
+using XrmToolBox.Extensibility.Args;
 
 namespace Maverick.Xrm.DependencyIdentifier
 {
-    public partial class DependencyIdentifierControl : PluginControlBase, IGitHubPlugin, IHelpPlugin, IPayPalPlugin
+    public partial class DependencyIdentifierControl : PluginControlBase, IGitHubPlugin, IHelpPlugin, IPayPalPlugin, IStatusBarMessenger
     {
         const int maxRequestsPerBatch = 100;
 
-        #region XrmToolBox settings
+        #region XrmToolBox
         private Settings pluginSettings;
         public string RepositoryName => "DependencyIdentifier";
         public string UserName => "Power-Maverick";
         public string HelpUrl => "https://github.com/Power-Maverick/DependencyIdentifier/blob/main/README.md";
         public string DonationDescription => "Thank you for your support.";
         public string EmailAccount => "danz@techgeek.co.in";
+        public event EventHandler<StatusBarMessageEventArgs> SendMessageToStatusBar;
         #endregion
 
         #region Private Variables
@@ -161,9 +163,12 @@ namespace Maverick.Xrm.DependencyIdentifier
                     }
                     else
                     {
-                        dgvDependencyReport.DataSource = (BindingList<DependencyReport>)args.Result;
+                        var result = (BindingList<DependencyReport>)args.Result;
+                        dgvDependencyReport.DataSource = result;
                         ColumnResize();
                         EnableColumnSorting();
+
+                        SendMessageToStatusBar.Invoke(this, new StatusBarMessageEventArgs($"Depdendency Count = {result.Count}"));
                     }
                 }
             });
@@ -488,7 +493,6 @@ namespace Maverick.Xrm.DependencyIdentifier
         }
 
         #endregion
-
 
     }
 }
