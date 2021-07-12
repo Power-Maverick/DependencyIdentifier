@@ -74,6 +74,7 @@ namespace Maverick.Xrm.DependencyIdentifier
                     {
                         var result = args.Result as List<EntityMetadata>;
                         dlvEntities.InitializeControl(result);
+                        lblSelectedEntities.ResetText();
                         Log("LoadEntityMetadata success", Enum.LogLevel.Success);
                     }
                 }
@@ -240,10 +241,10 @@ namespace Maverick.Xrm.DependencyIdentifier
 
         private void ColumnResize()
         {
-            dgvDependencyReport.Columns[0].Width = 125; // Entity Schema
+            dgvDependencyReport.Columns[0].Width = 150; // Entity Schema
             dgvDependencyReport.Columns[1].Width = 250; // Dependent Component
-            dgvDependencyReport.Columns[2].Width = 150; // Dependent Component Type
-            dgvDependencyReport.Columns[3].Width = 400; // Dependent Description
+            dgvDependencyReport.Columns[2].Width = 175; // Dependent Component Type
+            dgvDependencyReport.Columns[3].Width = 450; // Dependent Description
         }
 
         private void EnableColumnSorting()
@@ -423,10 +424,39 @@ namespace Maverick.Xrm.DependencyIdentifier
         private void tsmiExportToCSV_Click(object sender, EventArgs e)
         {
             var start = DateTime.Now;
-            if (dependentComponents != null)
+            var saveFileDialog = new SaveFileDialog();
+            var filter = "CSV file (*.csv)|*.csv| All Files (*.*)|*.*";
+            saveFileDialog.Filter = filter;
+            saveFileDialog.Title = @"Export as CSV";
+
+            if (saveFileDialog.ShowDialog() != DialogResult.OK) { return ; }
+
+            WorkAsync(new WorkAsyncInfo
             {
-                Export.ExportAsCsv(dependentComponents);
-            }
+                Message = $"Generating CSV file...",
+                Work = (worker, args) =>
+                {
+                    Export.ExportAsCsv(dependentComponents, saveFileDialog.FileName);
+
+                    args.Result = dependentComponents;
+                },
+                PostWorkCallBack = (args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        MessageBox.Show(args.Error.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Log(args.Error.ToString(), Enum.LogLevel.Error);
+                    }
+                    else
+                    {
+                        if (DialogResult.Yes == MessageBox.Show(this, "Do you want to open generated document?", "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
+                        {
+                            System.Diagnostics.Process.Start(saveFileDialog.FileName);
+                        }
+                    }
+                }
+            });
+
             var stop = DateTime.Now;
             var duration = stop - start;
             LogEventMetrics("Export CSV", "ExecutionTime", duration.TotalMilliseconds);
@@ -457,6 +487,13 @@ namespace Maverick.Xrm.DependencyIdentifier
                     {
                         MessageBox.Show(args.Error.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         Log(args.Error.ToString(), Enum.LogLevel.Error);
+                    }
+                    else
+                    {
+                        if (DialogResult.Yes == MessageBox.Show(this, "Do you want to open generated document?", "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
+                        {
+                            System.Diagnostics.Process.Start(saveFileDialog.FileName);
+                        }
                     }
                 }
             });

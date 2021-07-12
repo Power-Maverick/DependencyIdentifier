@@ -37,11 +37,13 @@ namespace Maverick.Xrm.DependencyIdentifier.UserControls
             this.colDisplayName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colSchemaName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colIsActivity = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.linklblClearSelection = new System.Windows.Forms.LinkLabel();
             this.pnlContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlContainer
             // 
+            this.pnlContainer.Controls.Add(this.linklblClearSelection);
             this.pnlContainer.Controls.Add(this.lvData);
             this.pnlContainer.Controls.Add(this.chkSelectAll);
             this.pnlContainer.Controls.Add(this.txtSearch);
@@ -72,7 +74,7 @@ namespace Maverick.Xrm.DependencyIdentifier.UserControls
             // 
             this.chkSelectAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkSelectAll.AutoSize = true;
-            this.chkSelectAll.Location = new System.Drawing.Point(541, 5);
+            this.chkSelectAll.Location = new System.Drawing.Point(457, 6);
             this.chkSelectAll.Name = "chkSelectAll";
             this.chkSelectAll.Size = new System.Drawing.Size(70, 17);
             this.chkSelectAll.TabIndex = 2;
@@ -86,7 +88,7 @@ namespace Maverick.Xrm.DependencyIdentifier.UserControls
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSearch.Location = new System.Drawing.Point(53, 3);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(482, 20);
+            this.txtSearch.Size = new System.Drawing.Size(398, 20);
             this.txtSearch.TabIndex = 1;
             this.txtSearch.Visible = false;
             this.txtSearch.WordWrap = false;
@@ -119,6 +121,18 @@ namespace Maverick.Xrm.DependencyIdentifier.UserControls
             this.colIsActivity.DisplayIndex = 2;
             this.colIsActivity.Text = "Is Activity";
             // 
+            // linklblClearSelection
+            // 
+            this.linklblClearSelection.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.linklblClearSelection.AutoSize = true;
+            this.linklblClearSelection.Location = new System.Drawing.Point(533, 7);
+            this.linklblClearSelection.Name = "linklblClearSelection";
+            this.linklblClearSelection.Size = new System.Drawing.Size(78, 13);
+            this.linklblClearSelection.TabIndex = 4;
+            this.linklblClearSelection.TabStop = true;
+            this.linklblClearSelection.Text = "Clear Selection";
+            this.linklblClearSelection.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linklblClearSelection_LinkClicked);
+            // 
             // DataListView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -142,5 +156,6 @@ namespace Maverick.Xrm.DependencyIdentifier.UserControls
         private System.Windows.Forms.ColumnHeader colSchemaName;
         private System.Windows.Forms.ColumnHeader colIsActivity;
         private System.Windows.Forms.ListView lvData;
+        private System.Windows.Forms.LinkLabel linklblClearSelection;
     }
 }

@@ -26,16 +26,8 @@ namespace Maverick.XTB.DI.Helper
 
         #endregion
 
-        public static void ExportAsCsv(List<DependencyReport> rows)
+        public static void ExportAsCsv(List<DependencyReport> rows, string fileName)
         {
-            var saveFileDialog = new SaveFileDialog();
-            var filter = "CSV file (*.csv)|*.csv| All Files (*.*)|*.*";
-            saveFileDialog.Filter = filter;
-            saveFileDialog.Title = @"Export as CSV";
-
-            if (saveFileDialog.ShowDialog() != DialogResult.OK) { return; }
-
-            var fileName = saveFileDialog.FileName;
             var writer = new StreamWriter(fileName);
 
             var header = string.Join(",", ColumnHeaders);
@@ -60,7 +52,6 @@ namespace Maverick.XTB.DI.Helper
             worksheet.Cells[1, 2].Value2 = ColumnHeaders[1].Replace("\"", "");
             worksheet.Cells[1, 3].Value2 = ColumnHeaders[2].Replace("\"", "");
             worksheet.Cells[1, 4].Value2 = ColumnHeaders[3].Replace("\"", "");
-            worksheet.Cells[1, 5].Value2 = ColumnHeaders[4].Replace("\"", "");
 
             for (var index = 0; index < rows.Count; index++)
             {
@@ -72,7 +63,7 @@ namespace Maverick.XTB.DI.Helper
                 worksheet.Cells[index + 2, "D"].Value2 = row.DependentDescription;
             }
 
-            var range = worksheet.Range["A1", $"E{rows.Count + 1}"];
+            var range = worksheet.Range["A1", $"D{rows.Count + 1}"];
             FormatAsTable(range, "TableDependency", "TableStyleMedium9");
 
             range.Columns.AutoFit();

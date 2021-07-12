@@ -135,7 +135,7 @@ namespace Maverick.Xrm.DI.Helper
             dependencyReport.DependentComponentType = dependentType?.DisplayValue;
             dependencyReport.RequiredComponentType = requiredType?.DisplayValue;
 
-            ComponentInfo dependentCI = GetComponentName(((OptionSetValue)dependency["dependentcomponenttype"]).Value, (Guid)dependency["dependentcomponentobjectid"]);
+            ComponentInfo dependentCI = GetComponentInfo(((OptionSetValue)dependency["dependentcomponenttype"]).Value, (Guid)dependency["dependentcomponentobjectid"]);
             if (dependentCI != null 
                 && !string.IsNullOrEmpty(dependencyReport.DependentComponentType)
                 && !string.IsNullOrEmpty(dependencyReport.RequiredComponentType))
@@ -153,8 +153,11 @@ namespace Maverick.Xrm.DI.Helper
                 dependencyReport.SkipAdding = true;
             }
 
-            ComponentInfo requiredCI = GetComponentName(((OptionSetValue)dependency["requiredcomponenttype"]).Value, (Guid)dependency["requiredcomponentobjectid"]);
-            dependencyReport.RequiredComponentName = requiredCI.Name;
+            ComponentInfo requiredCI = GetComponentInfo(((OptionSetValue)dependency["requiredcomponenttype"]).Value, (Guid)dependency["requiredcomponentobjectid"]);
+            if (requiredCI != null)
+            {
+                dependencyReport.RequiredComponentName = requiredCI.Name;
+            }
 
             // Disabled for testing
             if (!dependencyReport.SkipAdding
@@ -168,7 +171,7 @@ namespace Maverick.Xrm.DI.Helper
         }
 
         // The name or display name of the component depends on the type of component.
-        private static ComponentInfo GetComponentName(int componentType, Guid componentId)
+        private static ComponentInfo GetComponentInfo(int componentType, Guid componentId)
         {
             ComponentInfo info = null;
 
@@ -238,240 +241,324 @@ namespace Maverick.Xrm.DI.Helper
 
         private static ComponentInfo GetAttributeInformation(Guid id)
         {
-            ComponentInfo info = new ComponentInfo();
-            RetrieveAttributeRequest req = new RetrieveAttributeRequest
+            try
             {
-                MetadataId = id
-            };
-            RetrieveAttributeResponse resp = null;
+                ComponentInfo info = new ComponentInfo();
+                RetrieveAttributeRequest req = new RetrieveAttributeRequest
+                {
+                    MetadataId = id
+                };
+                RetrieveAttributeResponse resp = null;
 
-            if (Service is CrmServiceClient svc)
-            {
-                resp = (RetrieveAttributeResponse)svc.Execute(req);
+                if (Service is CrmServiceClient svc)
+                {
+                    resp = (RetrieveAttributeResponse)svc.Execute(req);
+                }
+                else
+                {
+                    resp = (RetrieveAttributeResponse)Service.Execute(req);
+                }
+
+                AttributeMetadata attmet = resp.AttributeMetadata;
+                info.Name = attmet.SchemaName;
+                info.Description = $"Entity: {attmet.EntityLogicalName}, Label: {attmet.DisplayName.UserLocalizedLabel.Label}";
+
+                return info;
             }
-            else
+            catch (Exception ex)
             {
-                resp = (RetrieveAttributeResponse)Service.Execute(req);
+                Telemetry.TrackException(ex);
+                return null;
             }
-
-            AttributeMetadata attmet = resp.AttributeMetadata;
-            info.Name = attmet.SchemaName;
-            info.Description = $"Entity: {attmet.EntityLogicalName}, Label: {attmet.DisplayName.UserLocalizedLabel.Label}";
-
-            return info;
         }
 
         private static ComponentInfo GetGlobalOptionSet(Guid id)
         {
-            ComponentInfo info = new ComponentInfo();
-            RetrieveOptionSetRequest req = new RetrieveOptionSetRequest
+            try
             {
-                MetadataId = id
-            };
-            RetrieveOptionSetResponse resp = (RetrieveOptionSetResponse)Service.Execute(req);
-            OptionSetMetadataBase os = resp.OptionSetMetadata;
-            info.Name = os.DisplayName.UserLocalizedLabel.Label;
-            info.Description = $"Schema: {os.Name}, Is Global: {os.IsGlobal}";
+                ComponentInfo info = new ComponentInfo();
+                RetrieveOptionSetRequest req = new RetrieveOptionSetRequest
+                {
+                    MetadataId = id
+                };
+                RetrieveOptionSetResponse resp = (RetrieveOptionSetResponse)Service.Execute(req);
+                OptionSetMetadataBase os = resp.OptionSetMetadata;
+                info.Name = os.DisplayName.UserLocalizedLabel.Label;
+                info.Description = $"Schema: {os.Name}, Is Global: {os.IsGlobal}";
 
-            return info;
+                return info;
+            }
+            catch (Exception ex)
+            {
+                Telemetry.TrackException(ex);
+                return null;
+            }
         }
 
         private static ComponentInfo GetFormDisplay(Guid id)
         {
-            ComponentInfo info = new ComponentInfo();
-            Entity eForm = Service.Retrieve("systemform", id, new ColumnSet("name", "objecttypecode", "type", "formactivationstate"));
-            if (eForm != null && eForm.Contains("type") && eForm.Contains("name"))
+            try
             {
-                info.Name = $"{eForm["name"]}";
-                info.Description = $"Entity: {eForm["objecttypecode"]}, Type: {eForm.GetFormattedValue("type")}, Status: {eForm.GetFormattedValue("formactivationstate")}";
-            }
+                ComponentInfo info = new ComponentInfo();
+                Entity eForm = Service.Retrieve("systemform", id, new ColumnSet("name", "objecttypecode", "type", "formactivationstate"));
+                if (eForm != null && eForm.Contains("type") && eForm.Contains("name"))
+                {
+                    info.Name = $"{eForm["name"]}";
+                    info.Description = $"Entity: {eForm["objecttypecode"]}, Type: {eForm.GetFormattedValue("type")}, Status: {eForm.GetFormattedValue("formactivationstate")}";
+                }
 
-            if (eForm.FormattedValues["type"] == "Dashboard")
-            {
-                info.IsDashboard = true;
-            }
+                if (eForm.FormattedValues["type"] == "Dashboard")
+                {
+                    info.IsDashboard = true;
+                }
 
-            return info;
+                return info;
+            }
+            catch (Exception ex) { Telemetry.TrackException(ex); return null; }
         }
 
         private static ComponentInfo GetSavedQuery(Guid id)
         {
-            ComponentInfo info = new ComponentInfo();
-            Entity eSavedQuery = Service.Retrieve("savedquery", id, new ColumnSet("name", "returnedtypecode", "statuscode", "isdefault"));
-            if (eSavedQuery != null && eSavedQuery.Contains("name") && eSavedQuery.Contains("returnedtypecode"))
+            try
             {
-                info.Name = $"{eSavedQuery["name"]}";
-                info.Description = $"Entity: {eSavedQuery["returnedtypecode"]}, Status: {eSavedQuery.GetFormattedValue("statuscode")}, Is Default: {eSavedQuery["isdefault"]}";
-            }
+                ComponentInfo info = new ComponentInfo();
+                Entity eSavedQuery = Service.Retrieve("savedquery", id, new ColumnSet("name", "returnedtypecode", "statuscode", "isdefault"));
+                if (eSavedQuery != null && eSavedQuery.Contains("name") && eSavedQuery.Contains("returnedtypecode"))
+                {
+                    info.Name = $"{eSavedQuery["name"]}";
+                    info.Description = $"Entity: {eSavedQuery["returnedtypecode"]}, Status: {eSavedQuery.GetFormattedValue("statuscode")}, Is Default: {eSavedQuery["isdefault"]}";
+                }
 
-            return info;
+                return info;
+            }
+            catch (Exception ex) { Telemetry.TrackException(ex); return null; }
         }
 
         private static ComponentInfo GetEntityMap(Guid id)
         {
-            ComponentInfo info = new ComponentInfo();
-            Entity eEntityMap = Service.Retrieve("entitymap", id, new ColumnSet("sourceentityname", "targetentityname"));
-            if (eEntityMap != null && eEntityMap.Contains("sourceentityname") && eEntityMap.Contains("targetentityname"))
+            try
             {
-                info.Name = $"Source: {eEntityMap["sourceentityname"]} | Target: {eEntityMap["targetentityname"]}";
-            }
+                ComponentInfo info = new ComponentInfo();
+                Entity eEntityMap = Service.Retrieve("entitymap", id, new ColumnSet("sourceentityname", "targetentityname"));
+                if (eEntityMap != null && eEntityMap.Contains("sourceentityname") && eEntityMap.Contains("targetentityname"))
+                {
+                    info.Name = $"Source: {eEntityMap["sourceentityname"]} | Target: {eEntityMap["targetentityname"]}";
+                }
 
-            return info;
+                return info;
+            }
+            catch (Exception ex) { Telemetry.TrackException(ex); return null; }
         }
 
         private static ComponentInfo GetModelDrivenApp(Guid id)
         {
-            ComponentInfo info = new ComponentInfo();
-            Entity eAppModule = Service.Retrieve("appmodule", id, new ColumnSet("name", "uniquename", "statuscode"));
-            if (eAppModule != null && eAppModule.Contains("name"))
+            try
             {
-                info.Name = $"{eAppModule["name"]}";
-                info.Description = $"Unique Name: {eAppModule["uniquename"]}, Status: {eAppModule.GetFormattedValue("statuscode")}";
-            }
+                ComponentInfo info = new ComponentInfo();
+                Entity eAppModule = Service.Retrieve("appmodule", id, new ColumnSet("name", "uniquename", "statuscode"));
+                if (eAppModule != null && eAppModule.Contains("name"))
+                {
+                    info.Name = $"{eAppModule["name"]}";
+                    info.Description = $"Unique Name: {eAppModule["uniquename"]}, Status: {eAppModule.GetFormattedValue("statuscode")}";
+                }
 
-            return info;
+                return info;
+            }
+            catch (Exception ex) { Telemetry.TrackException(ex); return null; }
         }
 
         private static ComponentInfo GetCanvasApp(Guid id)
         {
-            ComponentInfo info = new ComponentInfo();
-            Entity eCanvasApp = Service.Retrieve("canvasapp", id, new ColumnSet("name", "displayname"));
-            if (eCanvasApp != null && eCanvasApp.Contains("name"))
+            try
             {
-                info.Name = $"{eCanvasApp["displayname"]}";
-                info.Description = $"Unique Name: {eCanvasApp["name"]}";
-            }
+                ComponentInfo info = new ComponentInfo();
+                Entity eCanvasApp = Service.Retrieve("canvasapp", id, new ColumnSet("name", "displayname"));
+                if (eCanvasApp != null && eCanvasApp.Contains("name"))
+                {
+                    info.Name = $"{eCanvasApp["displayname"]}";
+                    info.Description = $"Unique Name: {eCanvasApp["name"]}";
+                }
 
-            return info;
+                return info;
+            }
+            catch (Exception ex) { Telemetry.TrackException(ex); return null; }
         }
 
         private static ComponentInfo GetSitemap(Guid id)
         {
-            ComponentInfo info = new ComponentInfo();
-            Entity eSitemap = Service.Retrieve("sitemap", id, new ColumnSet(true));
-            if (eSitemap != null && eSitemap.Contains("sitemapname"))
+            try
             {
-                info.Name = $"{eSitemap["sitemapname"]}";
-            }
+                ComponentInfo info = new ComponentInfo();
+                Entity eSitemap = Service.Retrieve("sitemap", id, new ColumnSet(true));
+                if (eSitemap != null && eSitemap.Contains("sitemapname"))
+                {
+                    info.Name = $"{eSitemap["sitemapname"]}";
+                }
 
-            return info;
+                return info;
+            }
+            catch (Exception ex) { Telemetry.TrackException(ex); return null; }
         }
 
         private static ComponentInfo GetMobileProfile(Guid id)
         {
-            ComponentInfo info = new ComponentInfo();
-            Entity eMobileProfile = Service.Retrieve("mobileofflineprofile", id, new ColumnSet("name"));
-            if (eMobileProfile != null && eMobileProfile.Contains("name"))
+            try
             {
-                info.Name = $"{eMobileProfile["name"]}";
-            }
+                ComponentInfo info = new ComponentInfo();
+                Entity eMobileProfile = Service.Retrieve("mobileofflineprofile", id, new ColumnSet("name"));
+                if (eMobileProfile != null && eMobileProfile.Contains("name"))
+                {
+                    info.Name = $"{eMobileProfile["name"]}";
+                }
 
-            return info;
+                return info;
+            }
+            catch (Exception ex)
+            {
+                Telemetry.TrackException(ex);
+                return null;
+            }
         }
 
         private static ComponentInfo GetEmailTemplate(Guid id)
         {
-            ComponentInfo info = new ComponentInfo();
-            Entity eEmailTemplate = Service.Retrieve("template", id, new ColumnSet("title", "templatetypecode", "languagecode"));
-            if (eEmailTemplate != null && eEmailTemplate.Contains("title"))
+            try
             {
-                info.Name = $"{eEmailTemplate["title"]}";
-                info.Description = $"Type: {eEmailTemplate["templatetypecode"]}, Language: {eEmailTemplate["languagecode"]}";
-            }
+                ComponentInfo info = new ComponentInfo();
+                Entity eEmailTemplate = Service.Retrieve("template", id, new ColumnSet("title", "templatetypecode", "languagecode"));
+                if (eEmailTemplate != null && eEmailTemplate.Contains("title"))
+                {
+                    info.Name = $"{eEmailTemplate["title"]}";
+                    info.Description = $"Type: {eEmailTemplate["templatetypecode"]}, Language: {eEmailTemplate["languagecode"]}";
+                }
 
-            return info;
+                return info;
+            }
+            catch (Exception ex) { Telemetry.TrackException(ex); return null; }
         }
 
         private static ComponentInfo GetMailMergeTemplate(Guid id)
         {
-            ComponentInfo info = new ComponentInfo();
-            Entity eMailMerge = Service.Retrieve("mailmergetemplate", id, new ColumnSet("name", "languagecode", "templatetypecode"));
-            if (eMailMerge != null && eMailMerge.Contains("name"))
+            try
             {
-                info.Name = $"{eMailMerge["name"]}";
-                info.Description = $"Type: {eMailMerge["templatetypecode"]}, Language: {eMailMerge["languagecode"]}";
-            }
+                ComponentInfo info = new ComponentInfo();
+                Entity eMailMerge = Service.Retrieve("mailmergetemplate", id, new ColumnSet("name", "languagecode", "templatetypecode"));
+                if (eMailMerge != null && eMailMerge.Contains("name"))
+                {
+                    info.Name = $"{eMailMerge["name"]}";
+                    info.Description = $"Type: {eMailMerge["templatetypecode"]}, Language: {eMailMerge["languagecode"]}";
+                }
 
-            return info;
+                return info;
+            }
+            catch (Exception ex) { Telemetry.TrackException(ex); return null; }
         }
 
         private static ComponentInfo GetReport(Guid id)
         {
-            ComponentInfo info = new ComponentInfo();
-            Entity eReport = Service.Retrieve("report", id, new ColumnSet("name", "languagecode", "reporttypecode"));
-            if (eReport != null && eReport.Contains("name"))
+            try
             {
-                info.Name = $"{eReport["name"]}";
-                info.Description = $"Type: {eReport.GetFormattedValue("reporttypecode")}, Language: {eReport["languagecode"]}";
+                ComponentInfo info = new ComponentInfo();
+                Entity eReport = Service.Retrieve("report", id, new ColumnSet("name", "languagecode", "reporttypecode"));
+                if (eReport != null && eReport.Contains("name"))
+                {
+                    info.Name = $"{eReport["name"]}";
+                    info.Description = $"Type: {eReport.GetFormattedValue("reporttypecode")}, Language: {eReport["languagecode"]}";
 
+                }
+
+                return info;
             }
-
-            return info;
+            catch (Exception ex)
+            {
+                Telemetry.TrackException(ex);
+                return null;
+            }
         }
 
         private static ComponentInfo GetSdkMessageProcessingStep(Guid id)
         {
-            ComponentInfo info = new ComponentInfo();
-            Entity eSdkMessage = Service.Retrieve("sdkmessageprocessingstep", id, new ColumnSet("name", "stage", "sdkmessageid", "statuscode"));
-            if (eSdkMessage != null && eSdkMessage.Contains("name"))
+            try
             {
-                info.Name = $"{eSdkMessage["name"]}";
-                info.Description = $"Stage: {eSdkMessage.GetFormattedValue("stage")}, SDK Message: {eSdkMessage.GetFormattedValue("sdkmessageid")}";
-            }
+                ComponentInfo info = new ComponentInfo();
+                Entity eSdkMessage = Service.Retrieve("sdkmessageprocessingstep", id, new ColumnSet("name", "stage", "sdkmessageid", "statuscode"));
+                if (eSdkMessage != null && eSdkMessage.Contains("name"))
+                {
+                    info.Name = $"{eSdkMessage["name"]}";
+                    info.Description = $"Stage: {eSdkMessage.GetFormattedValue("stage")}, SDK Message: {eSdkMessage.GetFormattedValue("sdkmessageid")}";
+                }
 
-            return info;
+                return info;
+            }
+            catch (Exception ex) { Telemetry.TrackException(ex); return null; }
         }
 
         private static ComponentInfo GetWorkflow(Guid id)
         {
-            ComponentInfo info = new ComponentInfo();
-            Entity eWorkflow = Service.Retrieve("workflow", id, new ColumnSet("name", "category", "primaryentity", "statuscode", "scope"));
-            if (eWorkflow != null && eWorkflow.Contains("name"))
+            try
             {
-                info.Name = $"{eWorkflow["name"]}";
-                info.Description = $"Type: {eWorkflow.GetFormattedValue("category")}, Entity: {eWorkflow.GetFormattedValue("primaryentity")}, Status: {eWorkflow.GetFormattedValue("statuscode")}";
-            }
+                ComponentInfo info = new ComponentInfo();
+                Entity eWorkflow = Service.Retrieve("workflow", id, new ColumnSet("name", "category", "primaryentity", "statuscode", "scope"));
+                if (eWorkflow != null && eWorkflow.Contains("name"))
+                {
+                    info.Name = $"{eWorkflow["name"]}";
+                    info.Description = $"Type: {eWorkflow.GetFormattedValue("category")}, Entity: {eWorkflow.GetFormattedValue("primaryentity")}, Status: {eWorkflow.GetFormattedValue("statuscode")}";
+                }
 
-            return info;
+                return info;
+            }
+            catch (Exception ex) { Telemetry.TrackException(ex); return null; }
         }
 
         private static ComponentInfo GetFieldSecurityProfile(Guid id)
         {
-            ComponentInfo info = new ComponentInfo();
-            Entity eFLS = Service.Retrieve("fieldsecurityprofile", id, new ColumnSet("name"));
-            if (eFLS != null && eFLS.Contains("name"))
+            try
             {
-                info.Name = $"{eFLS["name"]}";
-            }
+                ComponentInfo info = new ComponentInfo();
+                Entity eFLS = Service.Retrieve("fieldsecurityprofile", id, new ColumnSet("name"));
+                if (eFLS != null && eFLS.Contains("name"))
+                {
+                    info.Name = $"{eFLS["name"]}";
+                }
 
-            return info;
+                return info;
+            }
+            catch (Exception ex) { Telemetry.TrackException(ex); return null; }
         }
 
         private static ComponentInfo GetEntityRelationship(Guid id)
         {
-            ComponentInfo info = new ComponentInfo();
-            RetrieveRelationshipRequest req = new RetrieveRelationshipRequest
+            try
             {
-                MetadataId = id
-            };
-            RetrieveRelationshipResponse resp = (RetrieveRelationshipResponse)Service.Execute(req);
-            if (resp != null)
-            {
-                if (resp.RelationshipMetadata.GetType().Name == "OneToManyRelationshipMetadata")
+                ComponentInfo info = new ComponentInfo();
+                RetrieveRelationshipRequest req = new RetrieveRelationshipRequest
                 {
-                    info.Name = $"{resp.RelationshipMetadata.SchemaName} (1:M)";
-                    OneToManyRelationshipMetadata oneToMany = (OneToManyRelationshipMetadata)resp.RelationshipMetadata;
-                    info.Description = $"Referenced: {oneToMany.ReferencedEntity} ({oneToMany.ReferencedAttribute}), Referencing: {oneToMany.ReferencingEntity} ({oneToMany.ReferencingAttribute})";
-                }
-                else if (resp.RelationshipMetadata.GetType().Name == "ManyToManyRelationshipMetadata")
+                    MetadataId = id
+                };
+                RetrieveRelationshipResponse resp = (RetrieveRelationshipResponse)Service.Execute(req);
+                if (resp != null)
                 {
-                    info.Name = $"{resp.RelationshipMetadata.SchemaName} (M:M)";
-                    ManyToManyRelationshipMetadata manyToMany = (ManyToManyRelationshipMetadata)resp.RelationshipMetadata;
-                    info.Description = $"First: {manyToMany.Entity1LogicalName} ({manyToMany.Entity1IntersectAttribute}), Second: {manyToMany.Entity2LogicalName} ({manyToMany.Entity2IntersectAttribute})";
+                    if (resp.RelationshipMetadata.GetType().Name == "OneToManyRelationshipMetadata")
+                    {
+                        info.Name = $"{resp.RelationshipMetadata.SchemaName} (1:M)";
+                        OneToManyRelationshipMetadata oneToMany = (OneToManyRelationshipMetadata)resp.RelationshipMetadata;
+                        info.Description = $"Referenced: {oneToMany.ReferencedEntity} ({oneToMany.ReferencedAttribute}), Referencing: {oneToMany.ReferencingEntity} ({oneToMany.ReferencingAttribute})";
+                    }
+                    else if (resp.RelationshipMetadata.GetType().Name == "ManyToManyRelationshipMetadata")
+                    {
+                        info.Name = $"{resp.RelationshipMetadata.SchemaName} (M:M)";
+                        ManyToManyRelationshipMetadata manyToMany = (ManyToManyRelationshipMetadata)resp.RelationshipMetadata;
+                        info.Description = $"First: {manyToMany.Entity1LogicalName} ({manyToMany.Entity1IntersectAttribute}), Second: {manyToMany.Entity2LogicalName} ({manyToMany.Entity2IntersectAttribute})";
+                    }
                 }
-            }
 
-            return info;
+                return info;
+            }
+            catch (Exception ex)
+            {
+                Telemetry.TrackException(ex);
+                return null;
+            }
         }
 
         #endregion

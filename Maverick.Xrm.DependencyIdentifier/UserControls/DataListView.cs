@@ -83,6 +83,9 @@ namespace Maverick.Xrm.DependencyIdentifier.UserControls
         {
             ClearData();
             SetAllItems(Entities);
+            ClearSearchText();
+            lstSelectedEntitites?.Clear();
+            lstComponentType?.Clear();
 
             lblSearch.Visible = ShowSearchBox;
             txtSearch.Visible = ShowSearchBox;
@@ -554,6 +557,23 @@ namespace Maverick.Xrm.DependencyIdentifier.UserControls
         private void chkSelectAll_CheckedChanged(object sender, EventArgs e)
         {
             ToggleSelectAll();
+        }
+        private void linklblClearSelection_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            lvData.SuspendLayout();
+
+            foreach (ListViewItem item in lvData.Items)
+            {
+                if (item.Checked)
+                {
+                    item.Checked = false;
+                }
+            }
+
+            lvData.ResumeLayout();
+
+            // now that we have an updated list view, udpate the list of selected items
+            UpdateSelectedItemsList();
         }
 
         #endregion
