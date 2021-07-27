@@ -363,9 +363,9 @@ namespace Maverick.Xrm.DependencyIdentifier
                 LogInfo("Settings found and loaded");
             }
 
-            PrivatePreview frmPrivatePreview = new PrivatePreview();
-            frmPrivatePreview.StartPosition = FormStartPosition.CenterScreen;
-            frmPrivatePreview.ShowDialog();
+            //PrivatePreview frmPrivatePreview = new PrivatePreview();
+            //frmPrivatePreview.StartPosition = FormStartPosition.CenterScreen;
+            //frmPrivatePreview.ShowDialog();
 
             EnsureServiceIsAvailable();
             LogPageView("Main Plugin");
