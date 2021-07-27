@@ -18,3 +18,14 @@ To find out the dependent components for multiple tables at one go, you can use 
 For more information on the tool [read the blog](https://linnzawwin.blogspot.com/p/dependency-identifier.html) from Linn.
 
 > As more and more component types are getting added to Dataverse; this tool will come in handy when more features will be added to it. Few features are planned to simplify the identification of dependencies in Dataverse.
+
+## Usage
+1. Load Entities to view the list of all entities in the connected environment.
+2. Select the entities to generate dependencies
+3. Choose the Dependency Type (All Dependencies or Dependencies for Delete)
+4. Generate Dependencies
+5. Export to Excel/CSV if required
+
+## Screenshots
+##### Generating Dependencies
+![Dependency Identifier](docs/DependencyIdentifier.png)
