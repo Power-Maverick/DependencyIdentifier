@@ -15,7 +15,7 @@
     <description>Easily generate all the dependencies with respect to selected entities in one shot.</description>
     <summary>Easily generate all the dependencies with respect to selected entities in one shot.</summary>
     <releaseNotes>
-      Initial release - Private Preview
+      Initial release
     </releaseNotes>
     <copyright>Copyright © Danish Naglekar</copyright>
     <tags>XrmToolBox, Power Apps, Dataverse, Dependency Identifier</tags>
