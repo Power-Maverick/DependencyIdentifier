@@ -4,7 +4,7 @@
 
 [![Sponsor](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub)](https://github.com/sponsors/Power-Maverick)
 
-[![Twitter Follow](https://img.shields.io/twitter/follow/DanzMaverick?style=social)](https://twitter.com/Danzmaverick)
+[![Twitter Follow](https://img.shields.io/twitter/follow/DanzMaverick?style=social)](https://twitter.com/Danzmaverick) [![Twitter Follow](https://img.shields.io/twitter/follow/LinnZawWin?style=social)](https://twitter.com/LinnZawWin) [![Twitter Follow](https://img.shields.io/twitter/follow/arunvinoth?style=social)](https://twitter.com/arunvinoth)
 
 # Dependency Identifier
 An XrmToolBox tool to generate the list of dependent components for multiple tables and export it to an Excel/.CSV file
@@ -29,3 +29,12 @@ For more information on the tool [read the blog](https://linnzawwin.blogspot.com
 ## Screenshots
 ##### Generating Dependencies
 ![Dependency Identifier](docs/DependencyIdentifier.png)
+
+## Initial Contributors
+
+Name | Function
+------------ | -------------
+Arun Vinoth | the idea brain 💡
+Danish N. | the creator 👩‍💻
+Linn Zaw Win | the designer 🔥
+
