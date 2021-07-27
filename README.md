@@ -17,4 +17,4 @@ To find out the dependent components for multiple tables at one go, you can use 
 
 For more information on the tool [read the blog](https://linnzawwin.blogspot.com/p/dependency-identifier.html) from Linn.
 
-> As more and more component types are getting added to Dataverse; this toll will come in handy when more features will be added to tit. Few features are planned to simplify the identification of dependencies in Dataverse.
+> As more and more component types are getting added to Dataverse; this tool will come in handy when more features will be added to it. Few features are planned to simplify the identification of dependencies in Dataverse.
