@@ -14,16 +14,7 @@ namespace Maverick.XTB.DI.Helper
     {
         #region Private
 
-        private static List<string> ColumnHeaders = new List<string> { "\"Entity Schema Name\"", "\"Dependent Component\"", "\"Dependent Component Type\"", "\"DependentDescription\"" };
-
-        //private static void FormatAsTable(Range sourceRange, string tableName, string tableStyleName)
-        //{
-        //    sourceRange.Worksheet.ListObjects.Add(XlListObjectSourceType.xlSrcRange,
-        //            sourceRange, Type.Missing, XlYesNoGuess.xlYes, Type.Missing).Name =
-        //        tableName;
-        //    sourceRange.Select();
-        //    sourceRange.Worksheet.ListObjects[tableName].TableStyle = tableStyleName;
-        //}
+        private static List<string> ColumnHeaders = new List<string> { "\"Entity Schema Name\"", "\"Dependent Component\"", "\"Dependent Component Type\"", "\"Dependent Description\"" };
 
         #endregion
 
