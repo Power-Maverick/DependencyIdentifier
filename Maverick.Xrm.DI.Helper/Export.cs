@@ -1,5 +1,6 @@
 ﻿using Maverick.Xrm.DI.DataObjects;
-using Microsoft.Office.Interop.Excel;
+using OfficeOpenXml;
+using OfficeOpenXml.Table;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,16 +14,7 @@ namespace Maverick.XTB.DI.Helper
     {
         #region Private
 
-        private static List<string> ColumnHeaders = new List<string> { "\"Entity Schema Name\"", "\"Dependent Component\"", "\"Dependent Component Type\"", "\"DependentDescription\"" };
-
-        private static void FormatAsTable(Range sourceRange, string tableName, string tableStyleName)
-        {
-            sourceRange.Worksheet.ListObjects.Add(XlListObjectSourceType.xlSrcRange,
-                    sourceRange, Type.Missing, XlYesNoGuess.xlYes, Type.Missing).Name =
-                tableName;
-            sourceRange.Select();
-            sourceRange.Worksheet.ListObjects[tableName].TableStyle = tableStyleName;
-        }
+        private static List<string> ColumnHeaders = new List<string> { "\"Entity Schema Name\"", "\"Dependent Component\"", "\"Dependent Component Type\"", "\"Dependent Description\"" };
 
         #endregion
 
@@ -43,35 +35,31 @@ namespace Maverick.XTB.DI.Helper
 
         public static void ExportAsExcel(List<DependencyReport> rows, string fileName)
         {
-            var excel = new Microsoft.Office.Interop.Excel.Application();
-            var workbook = excel.Workbooks.Add();
-            Worksheet worksheet = workbook.Sheets.Add();
-            worksheet.Name = "Dependencies";
+            var package = new ExcelPackage();
 
-            worksheet.Cells[1, 1].Value2 = ColumnHeaders[0].Replace("\"","");
-            worksheet.Cells[1, 2].Value2 = ColumnHeaders[1].Replace("\"", "");
-            worksheet.Cells[1, 3].Value2 = ColumnHeaders[2].Replace("\"", "");
-            worksheet.Cells[1, 4].Value2 = ColumnHeaders[3].Replace("\"", "");
+            var worksheet = package.Workbook.Worksheets.Add("Dependencies");
+            worksheet.Cells[1, 1].Value = ColumnHeaders[0].Replace("\"", string.Empty);
+            worksheet.Cells[1, 2].Value = ColumnHeaders[1].Replace("\"", string.Empty);
+            worksheet.Cells[1, 3].Value = ColumnHeaders[2].Replace("\"", string.Empty);
+            worksheet.Cells[1, 4].Value = ColumnHeaders[3].Replace("\"", string.Empty);
 
             for (var index = 0; index < rows.Count; index++)
             {
                 var row = rows[index];
 
-                worksheet.Cells[index + 2, "A"].Value2 = row.EntitySchemaName;
-                worksheet.Cells[index + 2, "B"].Value2 = row.DependentComponentName;
-                worksheet.Cells[index + 2, "C"].Value2 = row.DependentComponentType;
-                worksheet.Cells[index + 2, "D"].Value2 = row.DependentDescription;
+                worksheet.Cells[index + 2, 1].Value = row.EntitySchemaName;
+                worksheet.Cells[index + 2, 2].Value = row.DependentComponentName;
+                worksheet.Cells[index + 2, 3].Value = row.DependentComponentType;
+                worksheet.Cells[index + 2, 4].Value = row.DependentDescription;
             }
+            var table = worksheet.Tables
+                .Add(worksheet.Cells[1, 1, rows.Count + 1, 4], "TableDependency");
+            table.TableStyle = TableStyles.Medium9;
 
-            var range = worksheet.Range["A1", $"D{rows.Count + 1}"];
-            FormatAsTable(range, "TableDependency", "TableStyleMedium9");
+            worksheet.Cells.AutoFitColumns();
 
-            range.Columns.AutoFit();
+            package.SaveAs(new FileInfo(fileName));
 
-            excel.DisplayAlerts = false;
-            workbook.SaveAs(fileName, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, XlSaveAsAccessMode.xlNoChange, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing);
-            workbook.Close(true);
-            excel.Quit();
         }
     }
 }
